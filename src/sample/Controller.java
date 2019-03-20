@@ -2,7 +2,7 @@ package sample;
 
 import java.util.*;
 
-//for bool player , false->AI ; true->User
+//for boolean player , false->AI ; true->User
 
 //there are no structs for Java, so we must make new classes, however we don't need new files for them
 
@@ -32,6 +32,10 @@ public class Controller {
 
     }
 
+    public boolean isValidMove(){
+
+    }
+
     public int getJarCount(Jar j){
         return j.numMarbles;
     }
@@ -44,6 +48,10 @@ public class Controller {
         int total = 0;
         if(p){
             for(int i = 0; i < player.size(); i++){
+                total+= getHouseCount(player.get(i));
+            }
+        }else{
+            for(int i = 0; i < computer.size(); i++){
                 total+= getHouseCount(player.get(i));
             }
         }

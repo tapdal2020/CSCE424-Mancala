@@ -18,9 +18,9 @@ public class Main extends Application {
 
 
     public static void main(String[] args){
-        launch(args);
         //initialize objects
         Controller b = new Controller();
         System.out.println(b.getSideCount(true));
+        launch(args);
     }
 }
