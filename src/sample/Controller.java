@@ -32,9 +32,13 @@ public class Controller {
 
     }
 
-    public boolean isValidMove(){
-
+   public boolean isValidMove(House h){
+        if(getHouseCount(h) > 0) { //marbles exist in house 
+            return true;
+        } //else empty (not a valid move)
+        return false;
     }
+
 
     public int getJarCount(Jar j){
         return j.numMarbles;
