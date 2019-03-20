@@ -14,6 +14,7 @@ public class Controller {
 
     ArrayList<House> player = new ArrayList<House>();
     ArrayList<House> computer = new ArrayList<House>();
+    ArrayList<Jar> jars = new ArrayList<>();
 
     public Controller(){ //constructs the board and its components
         for(int i = 0; i < 6; i++) {
@@ -21,8 +22,7 @@ public class Controller {
             computer.add(new House(4, false));
 
         }
-        ArrayList<Jar> jars = new ArrayList<>();
-
+        
         jars.add(new Jar(0,true));
         jars.add(new Jar(0,false));
     }
