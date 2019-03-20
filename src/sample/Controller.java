@@ -1,5 +1,8 @@
 package sample;
 
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+
+import java.awt.*;
 import java.util.*;
 
 //for boolean player , false->AI ; true->User
@@ -14,6 +17,7 @@ public class Controller {
 
     ArrayList<House> player = new ArrayList<House>();
     ArrayList<House> computer = new ArrayList<House>();
+
     ArrayList<Jar> jars = new ArrayList<>();
 
     public Controller(){ //constructs the board and its components
@@ -22,17 +26,21 @@ public class Controller {
             computer.add(new House(4, false));
 
         }
-        
+        //ArrayList<Jar> jars = new ArrayList<>();
+
         jars.add(new Jar(0,true));
         jars.add(new Jar(0,false));
+
+        //getBoardStatus();
     }
 
     //checks different aspects of the board and determines if there are any messages to be displayed or changes to be displayed
-     public void getBoardStatus(){ //print board
+    public void getBoardStatus(){ //print board
 
-        System.out.print("\t \t \t\t");
-        for (House playerHouse: player){
-            System.out.print(houseAttributes(playerHouse) + " ");
+        System.out.print("Board Status: \n\t \t \t\t");
+        for (int i = 0; i < 6; i++){
+            House playerHouse = player.get(i);
+            System.out.print((i+1)+houseAttributes(playerHouse) + " ");
         }
 
         Jar playerJar = jars.get(0);
@@ -41,19 +49,62 @@ public class Controller {
         Jar computerJar = jars.get(1);
         System.out.print(jarAttributes(computerJar) + " ");
 
-        for (House compHouse: computer){
-            System.out.print(houseAttributes(compHouse) + " ");
+        for (int i = 0; i < 6; i++){
+            House compHouse = computer.get(i);
+            System.out.print((i+1)+houseAttributes(compHouse) + " ");
         }
 
     }
 
-   public boolean isValidMove(House h){
-        if(getHouseCount(h) > 0) { //marbles exist in house 
+    public void moveMarbles(){
+        while( getSideCount(true) > 0 || getSideCount(false) >0 ) {
+            Scanner keyboard = new Scanner(System.in);
+            System.out.println("\nEnter an integer of the house you wish to select: ");
+            int userInput = keyboard.nextInt();
+
+            House selectedHouse = player.get(userInput - 1);
+            if (isValidMove(selectedHouse)) {
+
+                int numMarblesToMove = selectedHouse.numMarbles;
+                int totalMarblesToMove = numMarblesToMove;
+                selectedHouse.numMarbles = 0;
+
+                for (int i = userInput; i < 6; i++) {
+                    House currHouse = player.get(i);
+                    if (numMarblesToMove > 0) {
+                        currHouse.numMarbles++;
+                        numMarblesToMove--;
+                    } else {
+                        break;
+                    }
+                }
+                if (numMarblesToMove > 0) {
+                    Jar playerJar = jars.get(0);
+                    playerJar.numMarbles++;
+                    numMarblesToMove--;
+                }
+
+                for (int i = 5; i >= 0; i--) {
+                    House currHouse = computer.get(i);
+                    if (numMarblesToMove > 0) {
+                        currHouse.numMarbles++;
+                        numMarblesToMove--;
+                    } else {
+                        break;
+                    }
+                }
+            } else {
+                System.out.println("\nPlease enter a number between 1 and 6");
+            }
+            getBoardStatus();
+        }
+    }
+    public boolean isValidMove(House h){
+        if(getHouseCount(h) > 0) { //marbles exist in house
             return true;
         } //else empty (not a valid move)
         return false;
     }
-
 
     public int getJarCount(Jar j){
         return j.numMarbles;
@@ -77,7 +128,6 @@ public class Controller {
         return total;
     }
 
-    
     public String houseAttributes(House h){
         String values = Integer.toString((h.numMarbles));
         String play  = Boolean.toString((h.player));
@@ -89,8 +139,10 @@ public class Controller {
         String play  = Boolean.toString((h.player));
         return "[JAR: " + values + ","+ play + "]";
     }
+
 }
 
+/*******************House Class ****************************/
 class House{ //represents the divots in the board that hold the marbles still in play
     public int numMarbles;
     boolean player;
@@ -99,8 +151,11 @@ class House{ //represents the divots in the board that hold the marbles still in
         numMarbles = num;
         player = p;
     }
+
+
 }
 
+/*******************Jar Class ****************************/
 class Jar{
     public int numMarbles;
     boolean player;
@@ -109,5 +164,7 @@ class Jar{
         numMarbles = num;
         player = p;
     }
+
+
 }
 
