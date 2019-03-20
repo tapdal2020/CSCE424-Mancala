@@ -28,7 +28,22 @@ public class Controller {
     }
 
     //checks different aspects of the board and determines if there are any messages to be displayed or changes to be displayed
-    public void getBoardStatus(){
+     public void getBoardStatus(){ //print board
+
+        System.out.print("\t \t \t\t");
+        for (House playerHouse: player){
+            System.out.print(houseAttributes(playerHouse) + " ");
+        }
+
+        Jar playerJar = jars.get(0);
+        System.out.println(jarAttributes(playerJar));
+
+        Jar computerJar = jars.get(1);
+        System.out.print(jarAttributes(computerJar) + " ");
+
+        for (House compHouse: computer){
+            System.out.print(houseAttributes(compHouse) + " ");
+        }
 
     }
 
@@ -62,6 +77,18 @@ public class Controller {
         return total;
     }
 
+    
+    public String houseAttributes(House h){
+        String values = Integer.toString((h.numMarbles));
+        String play  = Boolean.toString((h.player));
+        return "[" + values + ","+ play + "]";
+    }
+
+    public String jarAttributes(Jar h){
+        String values = Integer.toString((h.numMarbles));
+        String play  = Boolean.toString((h.player));
+        return "[JAR: " + values + ","+ play + "]";
+    }
 }
 
 class House{ //represents the divots in the board that hold the marbles still in play
