@@ -106,9 +106,43 @@ public class Controller {
         }
     }
     public boolean isValidMove(House h){
-        if(getHouseCount(h) > 0) { //marbles exist in house
-            return true;
-        }else { //else empty (not a valid move)
+        String findHouseSide = "none";
+
+        //check if house is on the player or computer's side
+        for (int i = 0; i < 6; i++) {
+            if (player.get(i) == h) {
+                findHouseSide = "player";
+                System.out.println("player's turn");
+
+            }
+            if (computer.get(i) == h) {
+                findHouseSide = "computer";
+                System.out.println("computer's turn, picked house");
+            }
+        }
+
+        if ((isTurn == true && findHouseSide == "player") || (isTurn == false && findHouseSide == "computer")) {
+            if (findHouseSide == "player") {
+                if (getHouseCount(h) > 0) {
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+            if (findHouseSide == "computer") {
+                if (getHouseCount(h) > 0) {
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+            else{
+                return false;
+            }
+        }
+        else{
             return false;
         }
     }
