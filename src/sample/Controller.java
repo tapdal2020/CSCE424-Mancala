@@ -37,7 +37,7 @@ public class Controller {
     //checks different aspects of the board and determines if there are any messages to be displayed or changes to be displayed
     public void getBoardStatus(){ //print board
 
-        System.out.print("Board Status: \n\t \t \t\t");
+        System.out.print("Board Status: \n\t\t\t\t");
         for (int i = 0; i < 6; i++){
             House playerHouse = player.get(i);
             System.out.print((i+1)+houseAttributes(playerHouse) + " ");
@@ -54,6 +54,11 @@ public class Controller {
             System.out.print((i+1)+houseAttributes(compHouse) + " ");
         }
 
+        if(getSideCount(true) == 0 || getSideCount(false) == 0){
+            isEnd = true;
+            //function to determine who wins and who lost
+            //set a boolean to change it on the screen
+        }
     }
 
     public void moveMarbles(){
@@ -94,16 +99,18 @@ public class Controller {
                     }
                 }
             } else {
-                System.out.println("\nPlease enter a number between 1 and 6");
+                System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
             }
             getBoardStatus();
+           //isTurn=false; // this will set the state message to say "The computer is playing". At the end of our AI turn function, we will return the value back to true.
         }
     }
     public boolean isValidMove(House h){
         if(getHouseCount(h) > 0) { //marbles exist in house
             return true;
-        } //else empty (not a valid move)
-        return false;
+        }else { //else empty (not a valid move)
+            return false;
+        }
     }
 
     public int getJarCount(Jar j){
