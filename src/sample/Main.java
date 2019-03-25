@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.Scanner;
+
 public class Main extends Application {
 
     @Override
@@ -20,10 +22,18 @@ public class Main extends Application {
     public static void main(String[] args){
        //initialize objects
         Controller b = new Controller();
+        //get user input for number of seeds and houses
+        Scanner keyboard = new Scanner(System.in);
+        System.out.println("Enter the number of houses: ");
+        b.numHousesINPUT = keyboard.nextInt();
+
+        System.out.println("Enter the number of seeds per house: ");
+        b.numSeedsINPUT = keyboard.nextInt();
+
         //System.out.println(b.getSideCount(true));
         b.getBoardStatus();
         b.moveMarbles();
-        //b.getBoardStatus();
+
         //Launch GUI Window
         launch(args);
     }
