@@ -14,6 +14,8 @@ public class Controller {
     boolean isEnd = false; //game begins in the playing state
     boolean isTurn = true; //it is always the user's turn at the beginning of the game
     int moves = 0;
+    int numHousesINPUT = 6; //default number of houses is 6;
+    int numSeedsINPUT = 4; //default number of seeds/house is 4
 
     ArrayList<House> player = new ArrayList<House>();
     ArrayList<House> computer = new ArrayList<House>();
@@ -21,9 +23,11 @@ public class Controller {
     ArrayList<Jar> jars = new ArrayList<>();
 
     public Controller(){ //constructs the board and its components
-        for(int i = 0; i < 6; i++) {
-            player.add(new House(4, true));
-            computer.add(new House(4, false));
+
+
+        for(int i = 0; i < numHousesINPUT; i++) {
+            player.add(new House(numSeedsINPUT, true));
+            computer.add(new House(numSeedsINPUT, false));
 
         }
         //ArrayList<Jar> jars = new ArrayList<>();
@@ -38,9 +42,9 @@ public class Controller {
     public void getBoardStatus(){ //print board
 
         System.out.print("Board Status: \n\t\t\t\t");
-        for (int i = 0; i < 6; i++){
-            House playerHouse = player.get(i);
-            System.out.print((i+1)+houseAttributes(playerHouse) + " ");
+        for (int i = 0; i < numHousesINPUT; i++){
+            House compHouse = computer.get(i);
+            System.out.print((i+1)+houseAttributes(compHouse) + " ");
         }
 
         Jar playerJar = jars.get(0);
@@ -49,9 +53,9 @@ public class Controller {
         Jar computerJar = jars.get(1);
         System.out.print(jarAttributes(computerJar) + " ");
 
-        for (int i = 0; i < 6; i++){
-            House compHouse = computer.get(i);
-            System.out.print((i+1)+houseAttributes(compHouse) + " ");
+        for (int i = 0; i < numHousesINPUT; i++){
+            House playerHouse = player.get(i);
+            System.out.print((i+1)+houseAttributes(playerHouse) + " ");
         }
 
         if(getSideCount(true) == 0 || getSideCount(false) == 0){
@@ -71,45 +75,48 @@ public class Controller {
             if (isValidMove(selectedHouse)) {
 
                 int numMarblesToMove = selectedHouse.numMarbles;
-                int totalMarblesToMove = numMarblesToMove;
                 selectedHouse.numMarbles = 0;
 
-                for (int i = userInput; i < 6; i++) {
-                    House currHouse = player.get(i);
-                    if (numMarblesToMove > 0) {
-                        currHouse.numMarbles++;
-                        numMarblesToMove--;
-                    } else {
-                        break;
+                while(numMarblesToMove > 0 ) {
+                    for (int i = userInput; i < numHousesINPUT; i++) {
+                        House currHouse = player.get(i);
+                        if (numMarblesToMove > 0) {
+                            currHouse.numMarbles++;
+                            numMarblesToMove--;
+                        } else {
+                            break;
+                        }
                     }
-                }
-                if (numMarblesToMove > 0) {
-                    Jar playerJar = jars.get(0);
-                    playerJar.numMarbles++;
-                    numMarblesToMove--;
-                }
+                    if (numMarblesToMove > 0) {
+                        Jar playerJar = jars.get(0);
+                        playerJar.numMarbles++;
+                        numMarblesToMove--;
+                    }
 
-                for (int i = 5; i >= 0; i--) {
-                    House currHouse = computer.get(i);
-                    if (numMarblesToMove > 0) {
-                        currHouse.numMarbles++;
-                        numMarblesToMove--;
-                    } else {
-                        break;
+                    for (int i = numHousesINPUT - 1; i >= 0; i--) {
+                        House currHouse = computer.get(i);
+                        if (numMarblesToMove > 0) {
+                            currHouse.numMarbles++;
+                            numMarblesToMove--;
+                        } else {
+                            break;
+                        }
                     }
+                    userInput = 0; //move index back to first house of player to keep moving marbles correctly
+                    System.out.print("Number of marbles left to move: " + numMarblesToMove + "\n"); //REMOVE LATER FIX ME
                 }
             } else {
                 System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
             }
             getBoardStatus();
-           //isTurn=false; // this will set the state message to say "The computer is playing". At the end of our AI turn function, we will return the value back to true.
+            //isTurn=false; // this will set the state message to say "The computer is playing". At the end of our AI turn function, we will return the value back to true.
         }
     }
     public boolean isValidMove(House h){
         String findHouseSide = "none";
 
         //check if house is on the player or computer's side
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < numHousesINPUT; i++) {
             if (player.get(i) == h) {
                 findHouseSide = "player";
                 System.out.println("player's turn");
@@ -208,4 +215,3 @@ class Jar{
 
 
 }
-
