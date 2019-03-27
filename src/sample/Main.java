@@ -22,17 +22,13 @@ public class Main extends Application {
     public static void main(String[] args){
        //initialize objects
         Controller b = new Controller();
-        //get user input for number of seeds and houses
-        Scanner keyboard = new Scanner(System.in);
-        System.out.println("Enter the number of houses: ");
-        b.numHousesINPUT = keyboard.nextInt();
-
-        System.out.println("Enter the number of seeds per house: ");
-        b.numSeedsINPUT = keyboard.nextInt();
+        b.getUserInputs();
+        b.assignRandomMarbles();
 
         //System.out.println(b.getSideCount(true));
+       // b.getBoardStatus();
+       // b.moveMarbles();
         b.getBoardStatus();
-        b.moveMarbles();
 
         //Launch GUI Window
         launch(args);
