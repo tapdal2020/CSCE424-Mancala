@@ -22,6 +22,7 @@ public class Controller {
 
     ArrayList<Jar> jars = new ArrayList<>();
 
+
     public Controller(){ //constructs the board and its components
 
 
@@ -30,17 +31,59 @@ public class Controller {
             computer.add(new House(numSeedsINPUT, false));
 
         }
-        //ArrayList<Jar> jars = new ArrayList<>();
-
+        //Creating Jar for both player and AI
         jars.add(new Jar(0,true));
         jars.add(new Jar(0,false));
-
-        //getBoardStatus();
     }
+
+    public  void getUserInputs(){
+        Scanner keyboard = new Scanner(System.in);
+        do {
+            System.out.print("Enter the number of houses (between 4 and 9): ");
+            numHousesINPUT = keyboard.nextInt();
+        }while(numHousesINPUT < 4 || numHousesINPUT > 9);
+        do {
+            System.out.print("Enter the number of seeds per house (between 1 and 10): ");
+            numSeedsINPUT = keyboard.nextInt();
+        }while( numSeedsINPUT <  1 || numSeedsINPUT > 10);
+    } //end user inputs
+
+
+    //Random Distribution of marbles in houses
+    public void assignRandomMarbles(){
+        String wantRandom = "";
+        System.out.print("Random Distribution (Y/N): ");
+        Scanner keyboard = new Scanner(System.in);
+        wantRandom  = keyboard.nextLine();
+
+        if(wantRandom.equals("y")  || wantRandom.equals("Y")) {
+            Random rand = new Random();
+            int temp = 0;
+            int sum = 0;
+            int prod = (numHousesINPUT * numSeedsINPUT); //total number of marbles necessary
+
+            for (int i = 1; i <= numHousesINPUT; i++) {
+                House currPlayerHouse = player.get(i - 1);
+                House currCompHouse = computer.get(numHousesINPUT - (i));
+                if (!(i == numHousesINPUT)) {
+                    temp = rand.nextInt((prod - sum) / (numHousesINPUT - i)) + 1;
+                    currPlayerHouse.numMarbles = temp;
+                    currCompHouse.numMarbles = temp;
+
+                    sum += temp;
+                } else {
+                    int last = (prod - sum);
+                    currPlayerHouse.numMarbles = last;
+                    currCompHouse.numMarbles = last;
+                    sum += last;
+                }
+            }
+        }
+    }//end random marbles
 
     //checks different aspects of the board and determines if there are any messages to be displayed or changes to be displayed
     public void getBoardStatus(){ //print board
-
+        System.out.println("*********************************************************");
         System.out.print("Board Status: \n\t\t\t\t");
         for (int i = 0; i < numHousesINPUT; i++){
             House compHouse = computer.get(i);
@@ -63,7 +106,8 @@ public class Controller {
             //function to determine who wins and who lost
             //set a boolean to change it on the screen
         }
-    }
+        System.out.println("\n*********************************************************");
+    }//end board status
 
     public void moveMarbles(){
         while( getSideCount(true) > 0 || getSideCount(false) >0 ) {
@@ -103,7 +147,6 @@ public class Controller {
                         }
                     }
                     userInput = 0; //move index back to first house of player to keep moving marbles correctly
-                    System.out.print("Number of marbles left to move: " + numMarblesToMove + "\n"); //REMOVE LATER FIX ME
                 }
             } else {
                 System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
@@ -111,7 +154,8 @@ public class Controller {
             getBoardStatus();
             //isTurn=false; // this will set the state message to say "The computer is playing". At the end of our AI turn function, we will return the value back to true.
         }
-    }
+    }//end move marbles
+
     public boolean isValidMove(House h){
         String findHouseSide = "none";
 
@@ -152,7 +196,7 @@ public class Controller {
         else{
             return false;
         }
-    }
+    }//end is valid
 
     public int getJarCount(Jar j){
         return j.numMarbles;
