@@ -259,3 +259,61 @@ class Jar{
 
 
 }
+
+class Node{
+    int value;
+    int index;
+    ArrayList <Node> children = new ArrayList<Node>();
+}
+
+class Tree extends Controller{
+    //initialize the root node
+    Node root = new Node();
+
+    //adds a new set of children to a node
+    void new_move(Node n){
+        for(int i = 0; i < 6; i++){
+            n.children.add(new Node());
+        }
+    }
+
+    int minimax(Node n, int depth, boolean max){
+        if(depth == 0 || n.children.size()!=0){
+            return n.value;
+        }
+        if(max){
+            int bestValue = -1000000;
+            for(Node x: n.children){
+                if(freeTurn(x)){
+                    max = true;
+                }else{
+                    max = false;
+                }
+                int val = minimax(x,depth-1,max);
+                bestValue = Math.max(bestValue,val);
+                return bestValue;
+            }
+        }else {
+            int bestValue = 1000000;
+            for (Node x : n.children) {
+                if (freeTurn(x)) {
+                    max = false;
+                } else {
+                    max = true;
+                }
+                int val = minimax(x, depth - 1, max);
+                bestValue = Math.min(bestValue, val);
+            }
+        }
+        return -1;
+    }
+
+    boolean freeTurn(Node n){
+        if((numHousesINPUT+1)-n.index == computer.get(n.index).numMarbles){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+}
