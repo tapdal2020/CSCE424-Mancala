@@ -20,6 +20,7 @@ public class Controller {
 
     ArrayList<House> player = new ArrayList<House>();
     ArrayList<House> computer = new ArrayList<House>();
+
     ArrayList<Jar> jars = new ArrayList<>();
 
 
@@ -97,8 +98,6 @@ public class Controller {
             System.out.print((i+1)+houseAttributes(playerHouse) + " ");
         }
 
-        System.out.print("\nSide count: " + getSideCount(true) + " " + getSideCount(false));
-
         if(getSideCount(true) == 0 || getSideCount(false) == 0){
             isEnd = true;
             //function to determine who wins and who lost
@@ -170,7 +169,7 @@ public class Controller {
                 }
                 //getBoardStatus();
                 isTurn = false; // this will set the state message to say "The computer is playing". At the end of our AI turn function, we will return the value back to true.
-                moveMarblesPlayer2(playerList,computerList,0);
+                moveMarblesPlayer2(playerList,computerList,jars,0);
             } else {
                 System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
                 isTurn = true; //stay on player 1 turn
@@ -184,9 +183,10 @@ public class Controller {
 
     }//end move marbles player 1
 
-    public void moveMarblesPlayer2(ArrayList<House> playerList, ArrayList<House> computerList, int AIInput){
+    public void moveMarblesPlayer2(ArrayList<House> playerList, ArrayList<House> computerList, ArrayList<Jar> jarList, int AIInput){
 
             getBoardStatus();
+
         if ( !isEnd) {
             int userInput;
             if(!isAI) {
@@ -223,13 +223,13 @@ public class Controller {
                         }
                     }
                     if (numMarblesToMove > 0) {
-                        Jar playerJar = jars.get(1);
+                        Jar playerJar = jarList.get(1);
                         playerJar.numMarbles++;
                         numMarblesToMove--;
                         if( numMarblesToMove == 0){ //player2 landed in own jar, gets free play
                             if(!isEnd) {
                                 isTurn = false;
-                                moveMarblesPlayer2(playerList, computerList, 0);
+                                moveMarblesPlayer2(playerList, computerList, jarList,0);
                             }
                             else{
                                 System.out.print("END OF GAME !!!");
@@ -252,7 +252,7 @@ public class Controller {
             } else {
                 System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
                 isTurn = false; // stay on player 2 turn
-                moveMarblesPlayer2(playerList,computerList,0);
+                moveMarblesPlayer2(playerList,computerList,jarList,0);
             }
         }
         else {
@@ -273,6 +273,7 @@ public class Controller {
 
             }
             if (computer.get(i) == h) {
+                Tree t = new Tree();
                 findHouseSide = "computer";
                 System.out.println("computer's turn, picked house");
             }
@@ -304,7 +305,6 @@ public class Controller {
         }
     }//end is valid move
 
-
     /****************** PLAY GAME *******************/
     public void twoPlayerGame(){
         //getBoardStatus();
@@ -317,7 +317,11 @@ public class Controller {
     }
 
     public void aiGame(){
-        System.out.print("AI GAME IMPLEMENTATION: IN PROGRESS"); //TODO
+        System.out.print("AI GAME IMPLEMENTATION: IN PROGRESS");
+
+            Tree t = new Tree();
+            t.AIMove();
+
     }
 
     public void gameType(){
@@ -427,18 +431,19 @@ class Tree extends Controller{
 
     //adds a new set of children to a node
     void constructTree(Node n){
-        for(int i = 0; i < numHousesINPUT; i++){
-            ArrayList<House> pTemp = player;
-            ArrayList<House> cTemp = computer;
-            moveMarblesPlayer2(pTemp,cTemp,i);
-            n.children.add(new Node(i,1,cTemp.get(i).numMarbles));
-            for(int j = 0; j < numHousesINPUT;j++){
-                ArrayList<House> pTemp2 = pTemp;
-                ArrayList<House> cTemp2 = cTemp;
-                moveMarblesPlayer2(pTemp2,cTemp2,j);
-                n.children.get(j).children.add(new Node(j,2,cTemp2.get(i).numMarbles));
-            }
-        }
+       for(int i = 0; i < numHousesINPUT; i++){
+           ArrayList<House> pTemp = player;
+           ArrayList<House> cTemp = computer;
+           moveMarblesPlayer2(pTemp,cTemp,jars,i);
+           n.children.add(new Node(i,1,cTemp.get(i).numMarbles));
+
+           for(int j = 0; j < numHousesINPUT;j++){
+               ArrayList<House> pTemp2 = pTemp;
+               ArrayList<House> cTemp2 = cTemp;
+               moveMarblesPlayer2(pTemp2,cTemp2,jars,j);
+               n.children.get(j).children.add(new Node(j,2,cTemp2.get(i).numMarbles));
+           }
+       }
     }
 
     int getScore(Node n){
@@ -446,8 +451,6 @@ class Tree extends Controller{
         if(freeTurn(n)){
             score = score + 5;
         }
-
-
 
         return score;
     }
