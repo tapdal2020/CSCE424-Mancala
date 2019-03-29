@@ -176,6 +176,7 @@ public class Controller {
     public void moveMarblesPlayer2(ArrayList<House> playerList, ArrayList<House> computerList, int AIInput){
 
             getBoardStatus();
+
         if ( !isEnd) {
             int userInput;
             if(!isAI) {
@@ -253,6 +254,7 @@ public class Controller {
 
             }
             if (computer.get(i) == h) {
+                Tree t = new Tree();
                 findHouseSide = "computer";
                 System.out.println("computer's turn, picked house");
             }
@@ -296,7 +298,11 @@ public class Controller {
     }
 
     public void aiGame(){
-        System.out.print("AI GAME IMPLEMENTATION: IN PROGRESS"); //TODO
+        System.out.print("AI GAME IMPLEMENTATION: IN PROGRESS");
+
+            Tree t = new Tree();
+            t.AIMove();
+
     }
 
     public void gameType(){
@@ -373,32 +379,66 @@ class Jar{
         numMarbles = num;
         player = p;
     }
-
-
 }
 
 /*****************NODE CLASS ****************************/
 class Node{
-    int value;
+    int depth;
     int index;
+    int score;
+    int value;
     ArrayList <Node> children = new ArrayList<Node>();
+
+    public Node(int i, int d, int v){
+        index = i;
+        depth = d;
+        score = 0;
+        value = v;
+    }
 }
 
 /********* TREE CLASS ***************************/
 class Tree extends Controller{
-    //initialize the root node
-    Node root = new Node();
+
+    Node root = new Node(0,0,0);
+
+    public Tree() {//initialize the root node
+        constructTree(root);
+    }
+
+    int move = 0;
 
     //adds a new set of children to a node
-    void new_move(Node n){
-        for(int i = 0; i < 6; i++){
-            n.children.add(new Node());
+    void constructTree(Node n){
+       for(int i = 0; i < numHousesINPUT; i++){
+           ArrayList<House> pTemp = player;
+           ArrayList<House> cTemp = computer;
+           moveMarblesPlayer2(pTemp,cTemp,i);
+           n.children.add(new Node(i,1,cTemp.get(i).numMarbles));
+           for(int j = 0; j < numHousesINPUT;j++){
+               ArrayList<House> pTemp2 = pTemp;
+               ArrayList<House> cTemp2 = cTemp;
+               moveMarblesPlayer2(pTemp2,cTemp2,j);
+               n.children.get(j).children.add(new Node(j,2,cTemp2.get(i).numMarbles));
+           }
+       }
+    }
+
+    int getScore(Node n){
+        int score = 0;
+        if(freeTurn(n)){
+            score = score + 5;
         }
+
+
+
+        return score;
     }
 
     int minimax(Node n, int depth, boolean max){
-        if(depth == 0 || n.children.size()!=0){
-            return n.value;
+        if(depth == 0 || n.children.size()==0){
+            n.score = getScore(n);
+            return n.score;
         }
         if(max){
             int bestValue = -1000000;
@@ -409,7 +449,11 @@ class Tree extends Controller{
                     max = false;
                 }
                 int val = minimax(x,depth-1,max);
-                bestValue = Math.max(bestValue,val);
+                if(val>bestValue){
+                    move = x.index;
+                    bestValue = val;
+                }
+                n.score = bestValue;
                 return bestValue;
             }
         }else {
@@ -421,7 +465,13 @@ class Tree extends Controller{
                     max = true;
                 }
                 int val = minimax(x, depth - 1, max);
-                bestValue = Math.min(bestValue, val);
+                if(val < bestValue){
+                    move = x.index;
+                    bestValue = val;
+                }
+                n.score = bestValue;
+                return bestValue;
+
             }
         }
         return -1;
@@ -433,6 +483,10 @@ class Tree extends Controller{
         }else{
             return false;
         }
+    }
+
+    int AIMove(){
+       return minimax(this.root,2,true);
     }
 
 }
