@@ -102,6 +102,8 @@ public class Controller {
             System.out.print((i+1)+houseAttributes(playerHouse) + " ");
         }
 
+        System.out.print("\nSide count: " + getSideCount(true) + " " + getSideCount(false));
+
         if(getSideCount(true) == 0 || getSideCount(false) == 0){
             isEnd = true;
             //function to determine who wins and who lost
@@ -119,9 +121,8 @@ public class Controller {
     /******************** Move Marbles ****************************/
     public void moveMarblesPlayer1(ArrayList<House> playerList, ArrayList<House> computerList){
             getBoardStatus();
-        if ( isEnd == false ) { //TODO Fix end game ( empty array check)
+        if ( !isEnd) { //TODO Fix end game ( empty array check)
             /*PLAYER INPUT*/
-
             System.out.println("PLAYER 1");
             Scanner keyboard = new Scanner(System.in);
             System.out.print("Enter an integer of the house you wish to select: ");
@@ -135,11 +136,21 @@ public class Controller {
                 selectedHouse.numMarbles = 0;
 
                 while (numMarblesToMove > 0) {
+                    //own houses
                     for (int i = userInput; i < numHousesINPUT; i++) {
                         House currHouse = playerList.get(i);
                         if (numMarblesToMove > 0) {
                             currHouse.numMarbles++;
                             numMarblesToMove--;
+                        }
+                        if( numMarblesToMove == 0){ //last marble
+                            if( currHouse.numMarbles == 1){ //landed in empty house
+                                Jar playerJar = jars.get(0);
+                                House oppositeHouse = computerList.get(i);
+                                playerJar.numMarbles = playerJar.numMarbles + oppositeHouse.numMarbles + 1;
+                                oppositeHouse.numMarbles = 0;
+                                currHouse.numMarbles = 0;
+                            }
                         }
                     }
                     if (numMarblesToMove > 0) {
@@ -157,7 +168,7 @@ public class Controller {
                             }
                         }
                     }
-
+                    //other players houses
                     for (int i = numHousesINPUT - 1; i >= 0; i--) {
                         House currHouse = computerList.get(i);
                         if (numMarblesToMove > 0) {
@@ -209,6 +220,15 @@ public class Controller {
                             if (numMarblesToMove > 0) {
                                 currHouse.numMarbles++;
                                 numMarblesToMove--;
+                            }
+                            if( numMarblesToMove == 0){ //last marble
+                                if( currHouse.numMarbles == 1){ //landed in own empty house
+                                    Jar playerJar = jars.get(1);
+                                    House oppositeHouse = playerList.get(i);
+                                    playerJar.numMarbles = playerJar.numMarbles + oppositeHouse.numMarbles + 1;
+                                    oppositeHouse.numMarbles = 0;
+                                    currHouse.numMarbles = 0;
+                                }
                             }
                         }
                     }
@@ -294,17 +314,16 @@ public class Controller {
         }
     }//end is valid move
 
+
     /****************** PLAY GAME *******************/
     public void twoPlayerGame(){
         //getBoardStatus();
         //while( getSideCount(true) > 0 && getSideCount(false) >0 ) {
-
-        moveMarblesPlayer1(player, computer);
-        //while free play move player1 again
-        //moveMarblesPlayer2();
-        //while free play move player 2 again
+            moveMarblesPlayer1(player, computer);
+            //while free play move player1 again
+            //moveMarblesPlayer2();
+            //while free play move player 2 again
         //}
-
     }
 
     public void aiGame(){
@@ -338,12 +357,12 @@ public class Controller {
     public int getSideCount(boolean p){
         int total = 0;
         if(p){
-            for(int i = 0; i < player.size(); i++){
+            for(int i = 0; i < numHousesINPUT; i++){
                 total+= getHouseCount(player.get(i));
             }
         }else{
-            for(int i = 0; i < computer.size(); i++){
-                total+= getHouseCount(player.get(i));
+            for(int i = 0; i < numHousesINPUT; i++){
+                total+= getHouseCount(computer.get(i));
             }
         }
         return total;
@@ -391,26 +410,62 @@ class Jar{
 
 /*****************NODE CLASS ****************************/
 class Node{
-    int value;
+    int depth;
     int index;
+    int score;
+    int value;
     ArrayList <Node> children = new ArrayList<Node>();
+
+    public Node(int i, int d, int v){
+        index = i;
+        depth = d;
+        score = 0;
+        value = v;
+    }
 }
 
 /********* TREE CLASS ***************************/
 class Tree extends Controller{
-    //initialize the root node
-    Node root = new Node();
+
+    Node root = new Node(0,0,0);
+
+    public Tree() {//initialize the root node
+        constructTree(root);
+    }
+
+    int move = 0;
 
     //adds a new set of children to a node
-    void new_move(Node n){
-        for(int i = 0; i < 6; i++){
-            n.children.add(new Node());
+    void constructTree(Node n){
+        for(int i = 0; i < numHousesINPUT; i++){
+            ArrayList<House> pTemp = player;
+            ArrayList<House> cTemp = computer;
+            moveMarblesPlayer2(pTemp,cTemp,i);
+            n.children.add(new Node(i,1,cTemp.get(i).numMarbles));
+            for(int j = 0; j < numHousesINPUT;j++){
+                ArrayList<House> pTemp2 = pTemp;
+                ArrayList<House> cTemp2 = cTemp;
+                moveMarblesPlayer2(pTemp2,cTemp2,j);
+                n.children.get(j).children.add(new Node(j,2,cTemp2.get(i).numMarbles));
+            }
         }
     }
 
+    int getScore(Node n){
+        int score = 0;
+        if(freeTurn(n)){
+            score = score + 5;
+        }
+
+
+
+        return score;
+    }
+
     int minimax(Node n, int depth, boolean max){
-        if(depth == 0 || n.children.size()!=0){
-            return n.value;
+        if(depth == 0 || n.children.size()==0){
+            n.score = getScore(n);
+            return n.score;
         }
         if(max){
             int bestValue = -1000000;
@@ -421,7 +476,11 @@ class Tree extends Controller{
                     max = false;
                 }
                 int val = minimax(x,depth-1,max);
-                bestValue = Math.max(bestValue,val);
+                if(val>bestValue){
+                    move = x.index;
+                    bestValue = val;
+                }
+                n.score = bestValue;
                 return bestValue;
             }
         }else {
@@ -433,7 +492,13 @@ class Tree extends Controller{
                     max = true;
                 }
                 int val = minimax(x, depth - 1, max);
-                bestValue = Math.min(bestValue, val);
+                if(val < bestValue){
+                    move = x.index;
+                    bestValue = val;
+                }
+                n.score = bestValue;
+                return bestValue;
+
             }
         }
         return -1;
@@ -445,6 +510,10 @@ class Tree extends Controller{
         }else{
             return false;
         }
+    }
+
+    int AIMove(){
+        return minimax(this.root,2,true);
     }
 
 }
