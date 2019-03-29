@@ -4,6 +4,8 @@ import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.awt.*;
 import java.util.*;
+import java.util.Timer.*;
+import java.util.TimerTask.*;
 
 //for boolean player , false->AI ; true->User
 
@@ -14,6 +16,7 @@ public class Controller {
     boolean isEnd = false; //game begins in the playing state
     boolean isTurn = true; //it is always the user's turn at the beginning of the game
     boolean isAI = false;
+    long timeLimit;
     int moves = 0;
     int numHousesINPUT = 6; //default number of houses is 6;
     int numSeedsINPUT = 4; //default number of seeds/house is 4
@@ -106,12 +109,19 @@ public class Controller {
         }
         System.out.println("\n*********************************************************");
     }//end board status
+    public void setTimeLimit(){
+        System.out.println("\nHow long would you like the time limit to be? (in seconds): ");
+        Scanner keyboard = new Scanner(System.in);
+        int sec = keyboard.nextInt();
+        timeLimit = sec*1000;
+    }
 
     /******************** Move Marbles ****************************/
     public void moveMarblesPlayer1(ArrayList<House> playerList, ArrayList<House> computerList){
             getBoardStatus();
-        if ( !isEnd) { //TODO Fix end game ( empty array check)
+        if ( isEnd == false ) { //TODO Fix end game ( empty array check)
             /*PLAYER INPUT*/
+
             System.out.println("PLAYER 1");
             Scanner keyboard = new Scanner(System.in);
             System.out.print("Enter an integer of the house you wish to select: ");
@@ -288,11 +298,13 @@ public class Controller {
     public void twoPlayerGame(){
         //getBoardStatus();
         //while( getSideCount(true) > 0 && getSideCount(false) >0 ) {
-            moveMarblesPlayer1(player, computer);
-            //while free play move player1 again
-            //moveMarblesPlayer2();
-            //while free play move player 2 again
+
+        moveMarblesPlayer1(player, computer);
+        //while free play move player1 again
+        //moveMarblesPlayer2();
+        //while free play move player 2 again
         //}
+
     }
 
     public void aiGame(){
