@@ -34,7 +34,6 @@ public class Main extends Application {
         b.assignRandomMarbles();
         b.gameType();
 
-
         //System.out.println(b.getSideCount(true));
        // b.getBoardStatus();
        // b.moveMarbles();

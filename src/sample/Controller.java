@@ -20,6 +20,7 @@ public class Controller {
 
     ArrayList<House> player = new ArrayList<House>();
     ArrayList<House> computer = new ArrayList<House>();
+
     ArrayList<Jar> jars = new ArrayList<>();
 
 
@@ -51,7 +52,6 @@ public class Controller {
         System.out.print("Random Distribution (Y/N): ");
         Scanner keyboard = new Scanner(System.in);
         wantRandom  = keyboard.nextLine();
-
 
         if(wantRandom.equals("y")  || wantRandom.equals("Y")) {
             Random rand = new Random();
@@ -178,7 +178,7 @@ public class Controller {
                 }
                 //getBoardStatus();
                 isTurn = false; // this will set the state message to say "The computer is playing". At the end of our AI turn function, we will return the value back to true.
-                moveMarblesPlayer2(playerList,computerList,0);
+                moveMarblesPlayer2(playerList,computerList,jars,0);
             } else {
                 System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
                 isTurn = true; //stay on player 1 turn
@@ -193,7 +193,7 @@ public class Controller {
 
     }//end move marbles player 1
 
-    public void moveMarblesPlayer2(ArrayList<House> playerList, ArrayList<House> computerList, int AIInput){
+    public void moveMarblesPlayer2(ArrayList<House> playerList, ArrayList<House> computerList, ArrayList<Jar> jarList,int AIInput){
         updateIsEnd();
         if ( !isEnd) {
             getBoardStatus();
@@ -234,13 +234,13 @@ public class Controller {
                         }
                     }
                     if (numMarblesToMove > 0) {
-                        Jar playerJar = jars.get(1);
+                        Jar playerJar = jarList.get(1);
                         playerJar.numMarbles++;
                         numMarblesToMove--;
                         if( numMarblesToMove == 0){ //player2 landed in own jar, gets free play
                             if(!isEnd) {
                                 isTurn = false;
-                                moveMarblesPlayer2(playerList, computerList, 0);
+                                moveMarblesPlayer2(playerList, computerList, jarList, 0);
                             }
                             /*else{
                                 System.out.print("END OF GAME !!!");
@@ -249,7 +249,7 @@ public class Controller {
                     }
 
                     for (int i = 0; i < numHousesINPUT; i++) {
-                        House currHouse = player.get(i);
+                        House currHouse = playerList.get(i);
                         if (numMarblesToMove > 0) {
                             currHouse.numMarbles++;
                             numMarblesToMove--;
@@ -263,7 +263,7 @@ public class Controller {
             } else {
                 System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
                 isTurn = false; // stay on player 2 turn
-                moveMarblesPlayer2(playerList,computerList,0);
+                moveMarblesPlayer2(playerList,computerList,jarList,0);
             }
         }
         /*else {
@@ -430,32 +430,68 @@ class Jar{
         numMarbles = num;
         player = p;
     }
-
-
 }
 
 /*****************NODE CLASS ****************************/
 class Node{
-    int value;
+    int depth;
     int index;
+    int score;
+    int value;
     ArrayList <Node> children = new ArrayList<Node>();
+
+    public Node(int i, int d, int v){
+        index = i;
+        depth = d;
+        score = 0;
+        value = v;
+    }
 }
 
 /********* TREE CLASS ***************************/
 class Tree extends Controller{
-    //initialize the root node
-    Node root = new Node();
+
+    Node root = new Node(0,0,0);
+
+    int move = 0;
 
     //adds a new set of children to a node
-    void new_move(Node n){
-        for(int i = 0; i < 6; i++){
-            n.children.add(new Node());
+    void constructTree(Node n){
+       for(int i = 0; i < numHousesINPUT; i++){
+           ArrayList<House> pTemp = player;
+           ArrayList<House> cTemp = computer;
+           ArrayList<Jar>jTemp = jars;
+           //moveMarblesPlayer2(pTemp,cTemp,jTemp,i);
+
+           n.children.add(new Node(i,1,cTemp.get(i).numMarbles));
+           n.children.get(i).score = getScore(n.children.get(i),jTemp.get(1).numMarbles);
+       }
+    }
+
+    void clearTree(){
+        for(Node x: root.children){
+            for(Node y: x.children){
+                y = null;
+            }
+            x=null;
         }
+        root = null;
+    }
+
+    int getScore(Node n, int newVal){
+        int score = 0;
+        if(freeTurn(n)){
+            score = score + 5;
+        }
+
+        score += newVal - jars.get(1).numMarbles;
+
+        return score;
     }
 
     int minimax(Node n, int depth, boolean max){
-        if(depth == 0 || n.children.size()!=0){
-            return n.value;
+        if(depth == 0 || n.children.size()==0){
+            return n.score;
         }
         if(max){
             int bestValue = -1000000;
@@ -466,7 +502,11 @@ class Tree extends Controller{
                     max = false;
                 }
                 int val = minimax(x,depth-1,max);
-                bestValue = Math.max(bestValue,val);
+                if(val>bestValue){
+                    move = x.index;
+                    bestValue = val;
+                }
+                n.score = bestValue;
                 return bestValue;
             }
         }else {
@@ -478,7 +518,13 @@ class Tree extends Controller{
                     max = true;
                 }
                 int val = minimax(x, depth - 1, max);
-                bestValue = Math.min(bestValue, val);
+                if(val < bestValue){
+                    move = x.index;
+                    bestValue = val;
+                }
+                n.score = bestValue;
+                return bestValue;
+
             }
         }
         return -1;
@@ -490,6 +536,11 @@ class Tree extends Controller{
         }else{
             return false;
         }
+    }
+
+    int AIMove(){
+        this.constructTree(this.root);
+        return minimax(this.root,2,true);
     }
 
 }
