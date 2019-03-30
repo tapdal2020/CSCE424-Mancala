@@ -16,8 +16,8 @@ public class Controller {
     boolean isEnd = false; //game begins in the playing state
     boolean isTurn = true; //it is always the user's turn at the beginning of the game
     boolean isAI = false;
-    long timeLimit;
-    int moves = 0;
+    long timeAllowed;
+    int turnCount = 1;
     int numHousesINPUT = 6; //default number of houses is 6;
     int numSeedsINPUT = 4; //default number of seeds/house is 4
 
@@ -111,18 +111,31 @@ public class Controller {
         }
         System.out.println("\n*********************************************************");
     }//end board status
-    public void setTimeLimit(){
-        System.out.println("\nHow long would you like the time limit to be? (in seconds): ");
-        Scanner keyboard = new Scanner(System.in);
-        int sec = keyboard.nextInt();
-        timeLimit = sec*1000;
-    }
 
+    public void pieMove(){
+        ArrayList<House> tempHouseArray = player;
+        player = computer;
+        computer = tempHouseArray;
+
+        Jar tempJar = jars.get(0);
+        jars.set(0, jars.get(1));
+        jars.set(1, tempJar);
+        isTurn = true;
+        //player 1 goes again, but with houses/jars switched
+    }
+    public void setTimeLimit(){
+        System.out.println("\nHow long would you like the timer to be? (sec): ");
+        Scanner keyboard = new Scanner(System.in);
+        long reqTime  = keyboard.nextLong();
+        timeAllowed = reqTime*1000;
+
+    }
     /******************** Move Marbles ****************************/
     public void moveMarblesPlayer1(ArrayList<House> playerList, ArrayList<House> computerList){
-            getBoardStatus();
+        getBoardStatus();
         if ( !isEnd) { //TODO Fix end game ( empty array check)
             /*PLAYER INPUT*/
+
             System.out.println("PLAYER 1");
             Scanner keyboard = new Scanner(System.in);
             System.out.print("Enter an integer of the house you wish to select: ");
@@ -153,6 +166,7 @@ public class Controller {
                             }
                         }
                     }
+                    //own jar
                     if (numMarblesToMove > 0) {
                         Jar playerJar = jars.get(0);
                         playerJar.numMarbles++;
@@ -196,7 +210,7 @@ public class Controller {
 
     public void moveMarblesPlayer2(ArrayList<House> playerList, ArrayList<House> computerList, int AIInput){
 
-            getBoardStatus();
+        getBoardStatus();
         if ( !isEnd) {
             int userInput;
             if(!isAI) {
@@ -256,7 +270,7 @@ public class Controller {
                     }
                     userInput = numHousesINPUT+1; //move index back to first house of player to keep moving marbles correctly
                 } //end while numMarbles > 0
-               // getBoardStatus();
+                // getBoardStatus();
                 isTurn = true; // return to player 1 turn
                 moveMarblesPlayer1(playerList,computerList);
             } else {
@@ -283,6 +297,7 @@ public class Controller {
 
             }
             if (computer.get(i) == h) {
+                Tree t = new Tree();
                 findHouseSide = "computer";
                 System.out.println("computer's turn, picked house");
             }
@@ -294,6 +309,7 @@ public class Controller {
                     return true;
                 }
                 else{
+                    System.out.println("\nInvalid Move");
                     return false;
                 }
             }
@@ -302,14 +318,17 @@ public class Controller {
                     return true;
                 }
                 else{
+                    System.out.println("\nInvalid Move");
                     return false;
                 }
             }
             else{
+                System.out.println("\nInvalid Move");
                 return false;
             }
         }
         else{
+            System.out.println("\nInvalid Move");
             return false;
         }
     }//end is valid move
@@ -317,17 +336,33 @@ public class Controller {
 
     /****************** PLAY GAME *******************/
     public void twoPlayerGame(){
+
         //getBoardStatus();
+        if(turnCount == 2){
+            Scanner keyboard = new Scanner(System.in);
+            System.out.println("\nWould Player 2 like to use Pie Move? Y/N: ");
+            String userInput = keyboard.nextLine();
+
+            if(userInput == "Y"){
+                pieMove();
+            }
+
+        }
         //while( getSideCount(true) > 0 && getSideCount(false) >0 ) {
-            moveMarblesPlayer1(player, computer);
-            //while free play move player1 again
-            //moveMarblesPlayer2();
-            //while free play move player 2 again
+        moveMarblesPlayer1(player, computer);
+        //while free play move player1 again
+        //moveMarblesPlayer2();
+        //while free play move player 2 again
         //}
+
     }
 
     public void aiGame(){
-        System.out.print("AI GAME IMPLEMENTATION: IN PROGRESS"); //TODO
+        System.out.print("AI GAME IMPLEMENTATION: IN PROGRESS");
+
+        Tree t = new Tree();
+        t.AIMove();
+
     }
 
     public void gameType(){
