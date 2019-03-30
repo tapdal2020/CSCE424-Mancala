@@ -178,12 +178,13 @@ public class Controller {
                 }
                 //getBoardStatus();
                 isTurn = false; // this will set the state message to say "The computer is playing". At the end of our AI turn function, we will return the value back to true.
+                Tree t = new Tree();
+                System.out.println("Suggested move: " + t.AIMove());
                 moveMarblesPlayer2(playerList,computerList,jars,0);
             } else {
                 System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
                 isTurn = true; //stay on player 1 turn
-                moveMarblesPlayer1(playerList,computerList);
-
+                moveMarblesPlayer1(playerList, computerList);
             }
         }
         /*else {
@@ -194,6 +195,7 @@ public class Controller {
     }//end move marbles player 1
 
     public void moveMarblesPlayer2(ArrayList<House> playerList, ArrayList<House> computerList, ArrayList<Jar> jarList,int AIInput){
+
         updateIsEnd();
         if ( !isEnd) {
             getBoardStatus();
@@ -224,7 +226,7 @@ public class Controller {
                                 //landed in empty house and opposite house containts marbls
                                 //capture the opposite house
                                 if( currHouse.numMarbles == 1 && playerList.get(i).numMarbles > 0 ){
-                                    Jar playerJar = jars.get(1);
+                                    Jar playerJar = jarList.get(1);
                                     House oppositeHouse = playerList.get(i);
                                     playerJar.numMarbles = playerJar.numMarbles + oppositeHouse.numMarbles + 1;
                                     oppositeHouse.numMarbles = 0;
@@ -240,6 +242,8 @@ public class Controller {
                         if( numMarblesToMove == 0){ //player2 landed in own jar, gets free play
                             if(!isEnd) {
                                 isTurn = false;
+                                Tree t = new Tree();
+                                System.out.println("Suggested move: " + t.AIMove());
                                 moveMarblesPlayer2(playerList, computerList, jarList, 0);
                             }
                             /*else{
@@ -263,6 +267,8 @@ public class Controller {
             } else {
                 System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
                 isTurn = false; // stay on player 2 turn
+                Tree t = new Tree();
+                System.out.println("Suggested move: " + t.AIMove());
                 moveMarblesPlayer2(playerList,computerList,jarList,0);
             }
         }
@@ -461,18 +467,17 @@ class Tree extends Controller{
            ArrayList<House> pTemp = player;
            ArrayList<House> cTemp = computer;
            ArrayList<Jar>jTemp = jars;
-           //moveMarblesPlayer2(pTemp,cTemp,jTemp,i);
-
-           n.children.add(new Node(i,1,cTemp.get(i).numMarbles));
+           moveMarblesPlayer2(pTemp,cTemp,jTemp,i);
+           n.children.add(new Node(i,0,cTemp.get(i).numMarbles));
            n.children.get(i).score = getScore(n.children.get(i),jTemp.get(1).numMarbles);
        }
     }
 
     void clearTree(){
         for(Node x: root.children){
-            for(Node y: x.children){
+            /*for(Node y: x.children){
                 y = null;
-            }
+            }*/
             x=null;
         }
         root = null;
