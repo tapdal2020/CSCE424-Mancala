@@ -6,6 +6,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.Timer.*;
 import java.util.TimerTask.*;
+import java.util.Scanner;
 
 //for boolean player , false->AI ; true->User
 
@@ -16,6 +17,7 @@ public class Controller {
     boolean isEnd = false; //game begins in the playing state
     boolean isTurn = true; //it is always the user's turn at the beginning of the game
     boolean isAI = false;
+    boolean isTimeUp = true;
     long timeAllowed;
     int turnCount = 1;
     int numHousesINPUT = 6; //default number of houses is 6;
@@ -44,6 +46,7 @@ public class Controller {
             numHousesINPUT = keyboard.nextInt();
         }while(numHousesINPUT < 4 || numHousesINPUT > 9);
         do {
+
             System.out.print("Enter the number of seeds per house (between 1 and 10): ");
             numSeedsINPUT = keyboard.nextInt();
         }while( numSeedsINPUT <  1 || numSeedsINPUT > 10);
@@ -118,16 +121,28 @@ public class Controller {
     }//end board status
 
     public void pieMove(){
-        ArrayList<House> tempHouseArray = player;
+        /*ArrayList<House> tempHouseArray = player;
         player = computer;
-        computer = tempHouseArray;
+        computer = tempHouseArray;*/
 
+        System.out.println("\nStarting Pie Move...");
+        int length = player.size();
+        for (int i = 0; i<length; i++ ){
+            player.get(i).player = true;
+            computer.get(i).player = false;
+            //Change boolean value of player associated with the house
+        }
         Jar tempJar = jars.get(0);
         jars.set(0, jars.get(1));
         jars.set(1, tempJar);
+        jars.get(0).player = true;
+        jars.get(1).player = false;
         isTurn = true;
+        getBoardStatus();
         //player 1 goes again, but with houses/jars switched
     }
+
+
     public void setTimeLimit(){
         System.out.println("\nHow long would you like the timer to be? (sec): ");
         Scanner keyboard = new Scanner(System.in);
@@ -135,10 +150,85 @@ public class Controller {
         timeAllowed = reqTime*1000;
 
     }
+    /*
+    * Imported timer function
+    * */
+
+    public class TimedScanner implements Runnable
+    {
+        private Scanner scanner;
+        private StringBuilder buffer;
+        private boolean reading;
+        private Thread t;
+
+        public TimedScanner()
+        {
+            scanner = new Scanner(System.in);
+            buffer = new StringBuilder();
+            reading = false;
+            t = new Thread(this);
+            t.setDaemon(true);
+            t.start();
+        }
+
+        public String nextLine(long time)
+        {
+            reading = true;
+            String result = null;
+            long startTime = System.currentTimeMillis();
+            while (System.currentTimeMillis() - startTime < time && result == null)
+            {
+                try
+                {
+                    Thread.sleep(30);
+                }
+                catch (InterruptedException e)
+                {
+                }
+                synchronized (buffer)
+                {
+                    if (buffer.length() > 0)
+                    {
+                        Scanner temp = new Scanner(buffer.toString());
+                        result = temp.nextLine();
+                    }
+                }
+            }
+            reading = false;
+            return result;
+        }
+
+        @Override
+        public void run()
+        {
+            while (scanner.hasNextLine())
+            {
+                String line = scanner.nextLine();
+                synchronized (buffer)
+                {
+                    if (reading)
+                    {
+
+                        buffer.append(line);
+                        buffer.append("\n");
+
+                    }
+                    else
+                    {
+                        // flush the buffer
+                        if (buffer.length() != 0)
+                        {
+                            buffer.delete(0, buffer.length());
+                        }
+                    }
+                }
+            }
+        }
+    }
     /******************** Move Marbles ****************************/
     public void moveMarblesPlayer1(ArrayList<House> playerList, ArrayList<House> computerList){
         updateIsEnd();
-
+        //implemented timer in player 1 for now
         getBoardStatus();
         if ( !isEnd) { //TODO Fix end game ( empty array check)
             getBoardStatus();
@@ -147,69 +237,88 @@ public class Controller {
             System.out.println("PLAYER 1");
             Scanner keyboard = new Scanner(System.in);
             System.out.print("Enter an integer of the house you wish to select: ");
-            int userInput = keyboard.nextInt();
 
-            House selectedHouse = playerList.get(userInput - 1); //index differs by 1
-            if (isValidMove(selectedHouse)) {
+            int userInput = 10;
 
-                /*get number of marbles in selected house*/
-                int numMarblesToMove = selectedHouse.numMarbles;
-                selectedHouse.numMarbles = 0;
+            TimedScanner scanner = new TimedScanner();
+            String tempUserInput = scanner.nextLine(timeAllowed);
+            if (tempUserInput == null) {
+                System.out.println("Time's up, random move will be made for you");
+                isEnd = true;
+                isTimeUp = true;
+                userInput = 1 + (int) (Math.random() * numHousesINPUT);
+                if (isValidMove(playerList.get(userInput)) == false) {
+                    System.out.println("Automatic move was invalid, Player 1 loses");
+                    isEnd = true;
+                }
+            } else {
+                isTimeUp = false;
+                userInput = Integer.parseInt(tempUserInput);
+            }
+            if (isValidMove(playerList.get(userInput)) == true) {
+                House selectedHouse = playerList.get(userInput - 1); //index differs by 1
+                if (isValidMove(selectedHouse)) {
 
-                while (numMarblesToMove > 0) {
-                    //own houses
-                    for (int i = userInput; i < numHousesINPUT; i++) {
-                        House currHouse = playerList.get(i);
+                    /*get number of marbles in selected house*/
+                    int numMarblesToMove = selectedHouse.numMarbles;
+                    selectedHouse.numMarbles = 0;
+
+                    while (numMarblesToMove > 0) {
+                        //own houses
+                        for (int i = userInput; i < numHousesINPUT; i++) {
+                            House currHouse = playerList.get(i);
+                            if (numMarblesToMove > 0) {
+                                currHouse.numMarbles++;
+                                numMarblesToMove--;
+                            }
+                            if (numMarblesToMove == 0) { //last marble
+                                //landed in empty house and opposite house containts marbls
+                                //capture the opposite house
+                                if (currHouse.numMarbles == 1 && computerList.get(i).numMarbles > 0) {
+                                    Jar playerJar = jars.get(0);
+                                    House oppositeHouse = computerList.get(i);
+                                    playerJar.numMarbles = playerJar.numMarbles + oppositeHouse.numMarbles + 1;
+                                    oppositeHouse.numMarbles = 0;
+                                    currHouse.numMarbles = 0;
+                                }
+                            }
+                        }
+                        //own jar
                         if (numMarblesToMove > 0) {
-                            currHouse.numMarbles++;
+                            Jar playerJar = jars.get(0);
+                            playerJar.numMarbles++;
                             numMarblesToMove--;
-                        }
-                        if( numMarblesToMove == 0){ //last marble
-                            //landed in empty house and opposite house containts marbls
-                            //capture the opposite house
-                            if( currHouse.numMarbles == 1 && computerList.get(i).numMarbles > 0 ){
-                                Jar playerJar = jars.get(0);
-                                House oppositeHouse = computerList.get(i);
-                                playerJar.numMarbles = playerJar.numMarbles + oppositeHouse.numMarbles + 1;
-                                oppositeHouse.numMarbles = 0;
-                                currHouse.numMarbles = 0;
-                            }
-                        }
-                    }
-                    //own jar
-                    if (numMarblesToMove > 0) {
-                        Jar playerJar = jars.get(0);
-                        playerJar.numMarbles++;
-                        numMarblesToMove--;
 
-                        if( numMarblesToMove == 0){ //user landed in own jar, gets free play
-                            if(!isEnd) {
-                                isTurn = true;
-                                moveMarblesPlayer1(playerList, computerList);
-                            }
+                            if (numMarblesToMove == 0) { //user landed in own jar, gets free play
+                                if (!isEnd) {
+                                    isTurn = true;
+                                    moveMarblesPlayer1(playerList, computerList);
+                                }
                             /*else{
                                 System.out.print("END GAME !!!!");
                             }*/
+                            }
                         }
-                    }
-                    //other players houses
-                    for (int i = numHousesINPUT - 1; i >= 0; i--) {
-                        House currHouse = computerList.get(i);
-                        if (numMarblesToMove > 0) {
-                            currHouse.numMarbles++;
-                            numMarblesToMove--;
+                        //other players houses
+                        for (int i = numHousesINPUT - 1; i >= 0; i--) {
+                            House currHouse = computerList.get(i);
+                            if (numMarblesToMove > 0) {
+                                currHouse.numMarbles++;
+                                numMarblesToMove--;
+                            }
                         }
+                        userInput = 0; //move index back to first house of player to keep moving marbles correctly
                     }
-                    userInput = 0; //move index back to first house of player to keep moving marbles correctly
-                }
-                //getBoardStatus();
-                isTurn = false; // this will set the state message to say "The computer is playing". At the end of our AI turn function, we will return the value back to true.
-                moveMarblesPlayer2(playerList,computerList,jars,0);
-            } else {
-                System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
-                isTurn = true; //stay on player 1 turn
-                moveMarblesPlayer1(playerList,computerList);
+                    //getBoardStatus();
+                    turnCount++;
+                    isTurn = false; // this will set the state message to say "The computer is playing". At the end of our AI turn function, we will return the value back to true.
+                    moveMarblesPlayer2(playerList, computerList, jars, 0);
+                } else {
+                    System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
+                    isTurn = true; //stay on player 1 turn
+                    moveMarblesPlayer1(playerList, computerList);
 
+                }
             }
         }
         /*else {
@@ -219,9 +328,23 @@ public class Controller {
 
     }//end move marbles player 1
 
+    //going to implement timer in player 2 later, when it is more polished TODO
     public void moveMarblesPlayer2(ArrayList<House> playerList, ArrayList<House> computerList, ArrayList<Jar> jarList,int AIInput){
         updateIsEnd();
         if ( !isEnd) {
+
+            if(turnCount == 2){
+                getBoardStatus();
+                Scanner keyboard = new Scanner(System.in);
+                System.out.println("\nWould Player 2 like to use Pie Move? Y/N: ");
+                String pieInput = keyboard.nextLine();
+
+                if(pieInput != "N" || pieInput != "n"){
+                    System.out.println("\n Pie move accepted");
+                    pieMove();
+                    moveMarblesPlayer1(player,computer);
+                }
+            }
             getBoardStatus();
             int userInput;
             if(!isAI) {
@@ -284,6 +407,7 @@ public class Controller {
                     userInput = numHousesINPUT+1; //move index back to first house of player to keep moving marbles correctly
                 } //end while numMarbles > 0
                // getBoardStatus();
+                turnCount++;
                 isTurn = true; // return to player 1 turn
                 moveMarblesPlayer1(playerList,computerList);
             } else {
@@ -378,16 +502,7 @@ public class Controller {
         }
 
         //getBoardStatus();
-        if(turnCount == 2){
-            Scanner keyboard = new Scanner(System.in);
-            System.out.println("\nWould Player 2 like to use Pie Move? Y/N: ");
-            String userInput = keyboard.nextLine();
 
-            if(userInput == "Y"){
-                pieMove();
-            }
-
-        }
         //while( getSideCount(true) > 0 && getSideCount(false) >0 ) {
         moveMarblesPlayer1(player, computer);
         //while free play move player1 again

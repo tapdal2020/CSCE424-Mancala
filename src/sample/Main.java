@@ -28,7 +28,7 @@ public class Main extends Application {
 
 
     public static void main(String[] args){
-       //initialize objects
+        //initialize objects
         Controller b = new Controller();
         b.getUserInputs();
         b.assignRandomMarbles();
@@ -37,8 +37,8 @@ public class Main extends Application {
 
 
         //System.out.println(b.getSideCount(true));
-       // b.getBoardStatus();
-       // b.moveMarbles();
+        // b.getBoardStatus();
+        // b.moveMarbles();
 
         //Launch GUI Window
         launch(args);
