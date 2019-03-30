@@ -52,6 +52,7 @@ public class Controller {
         Scanner keyboard = new Scanner(System.in);
         wantRandom  = keyboard.nextLine();
 
+
         if(wantRandom.equals("y")  || wantRandom.equals("Y")) {
             Random rand = new Random();
             int temp;
