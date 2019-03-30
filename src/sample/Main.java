@@ -12,6 +12,8 @@ import javafx.scene.text.*;
 import javafx.geometry.*;
 
 
+import java.util.Scanner;
+
 public class Main extends Application {
 
     @Override
@@ -26,7 +28,7 @@ public class Main extends Application {
 
 
     public static void main(String[] args){
-        //initialize objects
+      //initialize objects
         Controller b = new Controller();
         b.getUserInputs();
         b.assignRandomMarbles();
