@@ -29,17 +29,17 @@ public class Main extends Application {
 
 
     public static void main(String[] args){
-        //initialize objects
-        // Controller b = new Controller();
-        // b.getUserInputs();
+      //initialize objects
+       // Controller b = new Controller();
+       // b.getUserInputs();
         //b.assignRandomMarbles();
         //b.gameType();
 
-        //BoardGUI board = new BoardGUI(b.numHousesINPUT, b.numSeedsINPUT);
+    //BoardGUI board = new BoardGUI(b.numHousesINPUT, b.numSeedsINPUT);
 
         //System.out.println(b.getSideCount(true));
-        // b.getBoardStatus();
-        // b.moveMarbles();
+       // b.getBoardStatus();
+       // b.moveMarbles();
 
         System.out.println("Starting up ....");
         //Launch GUI Window
