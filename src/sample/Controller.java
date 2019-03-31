@@ -1,6 +1,6 @@
 package sample;
 
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+    import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.awt.*;
 import java.util.*;
