@@ -1,9 +1,22 @@
-package sample;
 
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+    package sample;
 
-import java.awt.*;
-import java.util.*;
+    import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+
+    //import java.awt.*;
+    import java.util.*;
+
+    import javafx.application.Application;
+    import javafx.fxml.FXMLLoader;
+    import javafx.scene.Parent;
+    import javafx.scene.Scene;
+    import javafx.scene.Group;
+    import javafx.stage.Stage;
+    import javafx.scene.control.*;
+    import javafx.scene.layout.*;
+    import javafx.scene.text.*;
+    import javafx.geometry.*;
+
 
 //for boolean player , false->AI ; true->User
 
@@ -20,7 +33,6 @@ public class Controller {
 
     ArrayList<House> player = new ArrayList<House>();
     ArrayList<House> computer = new ArrayList<House>();
-
     ArrayList<Jar> jars = new ArrayList<>();
 
 
@@ -48,12 +60,12 @@ public class Controller {
 
     /******************** RANDOM DISTRIBUTION ******************************/
     public void assignRandomMarbles(){
-        String wantRandom = "";
+        //String wantRandom = "";
         System.out.print("Random Distribution (Y/N): ");
-        Scanner keyboard = new Scanner(System.in);
-        wantRandom  = keyboard.nextLine();
+        //Scanner keyboard = new Scanner(System.in);
+        //wantRandom  = keyboard.nextLine();
 
-        if(wantRandom.equals("y")  || wantRandom.equals("Y")) {
+        //if(wantRandom.equals("y")  || wantRandom.equals("Y")) {
             Random rand = new Random();
             int temp;
             int sum = 0;
@@ -75,7 +87,7 @@ public class Controller {
                     sum += last;
                 }
             }
-        }
+        //}
     }//end random marbles
 
     //checks different aspects of the board and determines if there are any messages to be displayed or changes to be displayed
@@ -109,6 +121,24 @@ public class Controller {
             isEnd = true;
             //function to determine who wins and who lost
             //set a boolean to change it on the screen
+        }
+    }
+
+    public void updateButtonLabels(){
+        for( int i = 0; i < numHousesINPUT; i++){
+            House currHouse = (player).get(i);
+            Button currButton = currHouse.houseButton;
+            currButton.setText(Integer.toString(currHouse.numMarbles));
+
+            currHouse = (computer).get(i);
+            currButton = currHouse.houseButton;
+            currButton.setText(Integer.toString(currHouse.numMarbles));
+        }
+
+        for( int j = 0; j <2; j++){
+            Jar currJar = jars.get(j);
+            Button currButton = currJar.jarButton;
+            currButton.setText(Integer.toString(currJar.numMarbles));
         }
     }
     /******************** Move Marbles ****************************/
@@ -185,6 +215,7 @@ public class Controller {
                 System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
                 isTurn = true; //stay on player 1 turn
                 moveMarblesPlayer1(playerList, computerList);
+
             }
         }
         /*else {
@@ -195,7 +226,6 @@ public class Controller {
     }//end move marbles player 1
 
     public void moveMarblesPlayer2(ArrayList<House> playerList, ArrayList<House> computerList, ArrayList<Jar> jarList,int AIInput){
-
         updateIsEnd();
         if ( !isEnd) {
             getBoardStatus();
@@ -261,7 +291,7 @@ public class Controller {
                     }
                     userInput = numHousesINPUT+1; //move index back to first house of player to keep moving marbles correctly
                 } //end while numMarbles > 0
-               // getBoardStatus();
+                // getBoardStatus();
                 isTurn = true; // return to player 1 turn
                 moveMarblesPlayer1(playerList,computerList);
             } else {
@@ -364,14 +394,14 @@ public class Controller {
 
     public void gameType(){
         String gameTypeINPUT = "";
-        System.out.print("Game Type (AI/2P): ");
+        System.out.print("Game Type: \n1:AI\n2:2P ");
         Scanner keyboard = new Scanner(System.in);
         gameTypeINPUT = keyboard.nextLine();
-        if ( gameTypeINPUT.equals("AI")){
+
+        if (gameTypeINPUT.equals("1")) {
             isAI = true;
             aiGame();
-        }
-        else if ( gameTypeINPUT.equals("2P")){
+        } else if (gameTypeINPUT.equals("2")) {
             isAI = false;
             twoPlayerGame();
         }
@@ -418,10 +448,12 @@ public class Controller {
 class House{ //represents the divots in the board that hold the marbles still in play
     public int numMarbles;
     boolean player;
+    Button houseButton = new Button();
 
     public House(int num, boolean p){
         numMarbles = num;
         player = p;
+        houseButton.setText(Integer.toString(numMarbles));
     }
 
 
@@ -431,10 +463,12 @@ class House{ //represents the divots in the board that hold the marbles still in
 class Jar{
     public int numMarbles;
     boolean player;
+    Button jarButton = new Button();
 
     public Jar(int num, boolean p){
         numMarbles = num;
         player = p;
+        jarButton.setText(Integer.toString(numMarbles));
     }
 }
 
@@ -463,14 +497,14 @@ class Tree extends Controller{
 
     //adds a new set of children to a node
     void constructTree(Node n){
-       for(int i = 0; i < numHousesINPUT; i++){
-           ArrayList<House> pTemp = player;
-           ArrayList<House> cTemp = computer;
-           ArrayList<Jar>jTemp = jars;
-           moveMarblesPlayer2(pTemp,cTemp,jTemp,i);
-           n.children.add(new Node(i,0,cTemp.get(i).numMarbles));
-           n.children.get(i).score = getScore(n.children.get(i),jTemp.get(1).numMarbles);
-       }
+        for(int i = 0; i < numHousesINPUT; i++){
+            ArrayList<House> pTemp = player;
+            ArrayList<House> cTemp = computer;
+            ArrayList<Jar>jTemp = jars;
+            moveMarblesPlayer2(pTemp,cTemp,jTemp,i);
+            n.children.add(new Node(i,0,cTemp.get(i).numMarbles));
+            n.children.get(i).score = getScore(n.children.get(i),jTemp.get(1).numMarbles);
+        }
     }
 
     void clearTree(){
