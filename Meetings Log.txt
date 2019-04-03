@@ -1,0 +1,42 @@
+
+3/18 - 50 minutes
+315 Lab
+Assigned project manager (Savannah Yu)
+Made project repository
+Made initial burndown chart
+Made sprint backlog
+Created trello to manage tasks
+
+3/18 - 105 minutes
+Zachry 282E
+Finished sprint backlog
+Divided tasks into 3 sprints
+Finished inital burndown chart
+Updated trello
+
+3/20 - 50 minutes
+315 Lab
+Got repository working for everyone in intelliJ
+Discussed data structure for jars/houses
+Worked on code
+
+3/21 - 10 minutes
+Zachry
+Sprint 1 finished
+
+3/25 - 50 minutes
+315 Lab
+updated sprint logs
+
+3/27 - 50 minutes
+315 Lab
+divided up remaining work and worked on code
+
+3/29 - 50 minutes
+315 cancelled lecture time
+fixing AI, getting timer to work
+
+
+3/29 - 160 minutes
+Zachry
+working together to finish sprint
