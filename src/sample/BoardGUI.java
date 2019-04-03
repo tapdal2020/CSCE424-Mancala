@@ -46,35 +46,35 @@ public class BoardGUI extends Stage{
         Controller b = new Controller();
         b.numHousesINPUT = numHouses;
         b.numSeedsINPUT = numMarbles;
-        b.updateButtonLabels();
+        //b.updateButtonLabels();
 
         //random distribution of marbles
         if(randDistMarbles){
             b.assignRandomMarbles(); //TODO: remove print statements
             b.getBoardStatus(); //TODO: remove later
-            b.updateButtonLabels();
+            //b.updateButtonLabels();
         }
 
 
         //button board //TODO: FIX ME
         for( int i = 0; i < numHouses; i++){
-            houseButton = (b.computer).get(i).houseButton;
+            //houseButton = (b.computer).get(i).houseButton;
             GridPane.setConstraints(houseButton,i+1,2);
             grid.getChildren().add(houseButton);
 
-            houseButton = (b.player).get(i).houseButton;
+            //houseButton = (b.player).get(i).houseButton;
             GridPane.setConstraints(houseButton,i+1,3);
             grid.getChildren().add(houseButton);
 
         }
 
         //player jar
-        playerJarButton = (b.jars).get(0).jarButton;
+        //playerJarButton = (b.jars).get(0).jarButton;
         GridPane.setConstraints(playerJarButton,0,2);
         GridPane.setRowSpan(playerJarButton,2);
 
         //computer jar
-        computerJarButton = (b.jars).get(1).jarButton;
+        //computerJarButton = (b.jars).get(1).jarButton;
         GridPane.setConstraints(computerJarButton,numHouses+2,2);
         GridPane.setRowSpan(computerJarButton,2);
 
