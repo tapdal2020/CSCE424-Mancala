@@ -16,7 +16,8 @@ import java.util.Scanner;
 
 public class BoardGUI extends Stage{
 
-    Button houseButton;
+    Button playerHouseButton;
+    Button computerHouseButton;
     Button playerJarButton;
     Button computerJarButton;
     Label label = new Label("Game Board");
@@ -28,7 +29,9 @@ public class BoardGUI extends Stage{
     GridPane grid = new GridPane();
     Scene scene = new Scene(root, 900, 900);
 
+    void updateButtonLabels(){
 
+    }
 
     public BoardGUI(int numHouses, int numMarbles, boolean randDistMarbles){
         //set scene properties
@@ -46,35 +49,39 @@ public class BoardGUI extends Stage{
         Controller b = new Controller();
         b.numHousesINPUT = numHouses;
         b.numSeedsINPUT = numMarbles;
-        b.updateButtonLabels();
+        updateButtonLabels();
 
         //random distribution of marbles
         if(randDistMarbles){
             b.assignRandomMarbles(); //TODO: remove print statements
             b.getBoardStatus(); //TODO: remove later
-            b.updateButtonLabels();
+            updateButtonLabels();
         }
 
 
         //button board //TODO: FIX ME
         for( int i = 0; i < numHouses; i++){
-            houseButton = (b.computer).get(i).houseButton;
-            GridPane.setConstraints(houseButton,i+1,2);
-            grid.getChildren().add(houseButton);
+            computerHouseButton = new Button();
+            computerHouseButton.setText(Integer.toString(b.computer.get(i).numMarbles));
+            GridPane.setConstraints(computerHouseButton,i+1,2);
+            grid.getChildren().add(computerHouseButton);
 
-            houseButton = (b.player).get(i).houseButton;
-            GridPane.setConstraints(houseButton,i+1,3);
-            grid.getChildren().add(houseButton);
+            playerHouseButton = new Button();
+            playerHouseButton.setText(Integer.toString(b.player.get(i).numMarbles));
+            GridPane.setConstraints(playerHouseButton,i+1,3);
+            grid.getChildren().add(playerHouseButton);
 
         }
 
         //player jar
-        playerJarButton = (b.jars).get(0).jarButton;
+        playerJarButton = new Button();
+        playerJarButton.setText(Integer.toString(b.jars.get(0).numMarbles));
         GridPane.setConstraints(playerJarButton,0,2);
         GridPane.setRowSpan(playerJarButton,2);
 
         //computer jar
-        computerJarButton = (b.jars).get(1).jarButton;
+        computerJarButton = new Button();
+        computerJarButton.setText(Integer.toString(b.jars.get(1).numMarbles));
         GridPane.setConstraints(computerJarButton,numHouses+2,2);
         GridPane.setRowSpan(computerJarButton,2);
 
