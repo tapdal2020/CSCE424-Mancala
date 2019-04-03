@@ -46,7 +46,6 @@ public class Controller {
             numHousesINPUT = keyboard.nextInt();
         }while(numHousesINPUT < 4 || numHousesINPUT > 9);
         do {
-
             System.out.print("Enter the number of seeds per house (between 1 and 10): ");
             numSeedsINPUT = keyboard.nextInt();
         }while( numSeedsINPUT <  1 || numSeedsINPUT > 10);
@@ -718,12 +717,10 @@ class House{ //represents the divots in the board that hold the marbles still in
     public int numMarbles;
     boolean player;
 
-    public House(int num, boolean p){
+    public House(int num, boolean p) {
         numMarbles = num;
         player = p;
     }
-
-
 }
 
 /*******************Jar Class ****************************/
@@ -766,10 +763,16 @@ class Tree extends Controller{
             ArrayList<House> pTemp = player;
             ArrayList<House> cTemp = computer;
             ArrayList<Jar>jTemp = jars;
-            //moveMarblesPlayer2(pTemp,cTemp,jTemp,i);
-
+            moveMarblesPlayer2(pTemp,cTemp,jTemp,i);
             n.children.add(new Node(i,1,cTemp.get(i).numMarbles));
-            n.children.get(i).score = getScore(n.children.get(i),jTemp.get(1).numMarbles);
+            for(int j = 0; j < numHousesINPUT; j++){
+                ArrayList<House> pTemp2 = pTemp;
+                ArrayList<House> cTemp2 = cTemp;
+                ArrayList<Jar> jTemp2 = jTemp;
+                moveMarblesPlayer2(pTemp2,cTemp2,jTemp2,j);
+                n.children.get(i).children.add(new Node(j,0,cTemp2.get(j).numMarbles));
+                n.children.get(i).children.get(j).score = getScore(n.children.get(i).children.get(j),jTemp2.get(1).numMarbles);
+            }
         }
     }
 
@@ -844,8 +847,15 @@ class Tree extends Controller{
     }
 
     int AIMove(){
+        System.out.println("Constructing Tree...");
         this.constructTree(this.root);
-        return minimax(this.root,2,true);
+        System.out.println("Finding Optimal Move...");
+        int result = minimax(this.root,2,true);
+        System.out.println("Optimal move is House #" + result);
+        System.out.println("Clearing Tree...");
+        this.clearTree();
+        return result;
+
     }
 
 }
