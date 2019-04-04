@@ -4,11 +4,22 @@ import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.net.*;
 import java.io.*;
-import java.awt.*;
+//import java.awt.*;
 import java.util.*;
 import java.util.Timer.*;
 import java.util.TimerTask.*;
 import java.util.Scanner;
+
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.Group;
+import javafx.stage.Stage;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.text.*;
+import javafx.geometry.*;
 
 
 //for boolean player , false->AI ; true->User
@@ -42,6 +53,22 @@ public class Controller {
         jars.add(new Jar(0,false));
     }
 
+    public void updateArrayLists(int numHouses, int numMarbles) {
+        int oldSize = player.size();
+        for( int i = 0; i < numHouses; i++){
+            if ( i < oldSize) {
+                player.set(i, new House(numMarbles, true));
+                computer.set(i, new House(numMarbles, false));
+            }
+            else {
+                player.add(new House(numMarbles,true));
+                computer.add(new House(numMarbles,false));
+            }
+
+        }
+    }
+
+
     public  void getUserInputs(){
         Scanner keyboard = new Scanner(System.in);
         do {
@@ -57,12 +84,12 @@ public class Controller {
 
     /******************** RANDOM DISTRIBUTION ******************************/
     public void assignRandomMarbles(){
-        String wantRandom = "";
-        System.out.print("Random Distribution (Y/N): ");
-        Scanner keyboard = new Scanner(System.in);
-        wantRandom  = keyboard.nextLine();
+        //String wantRandom = "";
+        //System.out.print("Random Distribution (Y/N): ");
+        //Scanner keyboard = new Scanner(System.in);
+        //wantRandom  = keyboard.nextLine();
 
-        if(wantRandom.equals("y")  || wantRandom.equals("Y")) {
+        //if(wantRandom.equals("y")  || wantRandom.equals("Y")) {
             Random rand = new Random();
             int temp;
             int sum = 0;
@@ -84,7 +111,7 @@ public class Controller {
                     sum += last;
                 }
             }
-        }
+        //}
     }//end random marbles
 
     //checks different aspects of the board and determines if there are any messages to be displayed or changes to be displayed
@@ -121,6 +148,27 @@ public class Controller {
         }
         System.out.println("\n*********************************************************");
     }//end board status
+
+
+    public void updateButtonLabels(){
+        for( int i = 0; i < numHousesINPUT; i++){
+            //System.out.println("i: update button label "+ i);
+            House currHouse = (player).get(i);
+            Button currButton = currHouse.houseButton;
+            currButton.setText(Integer.toString(currHouse.numMarbles));
+
+            currHouse = (computer).get(i);
+            currButton = currHouse.houseButton;
+            currButton.setText(Integer.toString(currHouse.numMarbles));
+            //System.out.println("end for update button label");
+        }
+
+        for( int j = 0; j < 2; j++){
+            Jar currJar = jars.get(j);
+            Button currButton = currJar.jarButton;
+            currButton.setText(Integer.toString(currJar.numMarbles));
+        }
+    }
 
     public void pieMove(){
         ArrayList<House> tempHouseArray = player;
@@ -717,10 +765,12 @@ public class Controller {
 class House{ //represents the divots in the board that hold the marbles still in play
     public int numMarbles;
     boolean player;
+    Button houseButton = new Button();
 
     public House(int num, boolean p) {
         numMarbles = num;
         player = p;
+        houseButton.setText(Integer.toString(numMarbles));
     }
 }
 
@@ -728,10 +778,12 @@ class House{ //represents the divots in the board that hold the marbles still in
 class Jar{
     public int numMarbles;
     boolean player;
+    Button jarButton = new Button();
 
     public Jar(int num, boolean p){
         numMarbles = num;
         player = p;
+        jarButton.setText(Integer.toString(numMarbles));
     }
 }
 
