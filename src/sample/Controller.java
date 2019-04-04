@@ -343,7 +343,6 @@ public class Controller {
                 Scanner keyboard = new Scanner(System.in);
                 System.out.println("\nWould Player 2 like to use Pie Move? Y/N: ");
                 String pieInput = keyboard.nextLine();
-
                 if(pieInput != "N" || pieInput != "n"){
                     System.out.println("\n Pie move accepted");
                     pieMove();
@@ -436,7 +435,6 @@ public class Controller {
                 Scanner keyboard = new Scanner(System.in);
                 System.out.println("\nWould Player 2 like to use Pie Move? Y/N: ");
                 String pieInput = keyboard.nextLine();
-
                 if(pieInput != "N" || pieInput != "n"){
                     System.out.println("\n Pie move accepted");
                     pieMove();
@@ -475,7 +473,7 @@ public class Controller {
                     while (numMarblesToMove > 0) {
                         //own houses
                         for (int i = userInput-1; i < numHousesINPUT; i++) {
-                            House currHouse = playerList.get(i + 1);
+                            House currHouse = playerList.get(i);
                             if (numMarblesToMove > 0) {
                                 currHouse.numMarbles++;
                                 numMarblesToMove--;
@@ -503,44 +501,44 @@ public class Controller {
                             playerJar.numMarbles++;
                             numMarblesToMove--;
                         }
-                            if (numMarblesToMove == 0) { //user landed in own jar, gets free play
-                                if (!isEnd) {
-                                    isTurn = true;
-                                    if(AIInput == -1) {
-                                        moveMarbles(playerList, computerList, jarList, -1);
-                                    }
-                                    else{//it's the player with the bottom houses
-                                        moveMarbles(computerList, playerList, jarList, -2);
-                                    }
+                        if (numMarblesToMove == 0) { //user landed in own jar, gets free play
+                            if (!isEnd) {
+                                isTurn = true;
+                                if(AIInput == -1) {
+                                    moveMarbles(playerList, computerList, jarList, -1);
                                 }
+                                else{//it's the player with the bottom houses
+                                    moveMarbles(computerList, playerList, jarList, -2);
+                                }
+                            }
                             /*else{
                                 System.out.print("END GAME !!!!");
                             }*/
-                            }
                         }
-                        //other players houses
-                        for (int i = numHousesINPUT - 1; i >= 0; i--) {
-                            House currHouse = computerList.get(i);
-                            if (numMarblesToMove > 0) {
-                                currHouse.numMarbles++;
-                                numMarblesToMove--;
-                            }
-                        }
-                        //userInput = 0; //move index back to first house of player to keep moving marbles correctly
                     }
-
-                    //getBoardStatus();
-                    turnCount++;
-                    isTurn = false; // this will set the state message to say "The computer is playing". At the end of our AI turn function, we will return the value back to true.
-                    moveMarbles(computerList, playerList, jarList, -2);//-2 means human player 2
-                } else {
-                    System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
-                    isTurn = true; //stay on player 1 turn
-                    moveMarbles(playerList, computerList, jarList, -1);//-1 means human player 1
-
+                    //other players houses
+                    for (int i = numHousesINPUT - 1; i >= 0; i--) {
+                        House currHouse = computerList.get(i);
+                        if (numMarblesToMove > 0) {
+                            currHouse.numMarbles++;
+                            numMarblesToMove--;
+                        }
+                    }
+                    //userInput = 0; //move index back to first house of player to keep moving marbles correctly
                 }
+
+                //getBoardStatus();
+                turnCount++;
+                isTurn = false; // this will set the state message to say "The computer is playing". At the end of our AI turn function, we will return the value back to true.
+                moveMarbles(computerList, playerList, jarList, -2);//-2 means human player 2
+            } else {
+                System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
+                isTurn = true; //stay on player 1 turn
+                moveMarbles(playerList, computerList, jarList, -1);//-1 means human player 1
+
             }
         }
+    }
         /*else {
             System.out.println("END GAME, NO MARBLES ON ONE SIDE p2");
         }*/
@@ -753,45 +751,46 @@ class Node{
     }
 }
 
-/********* TREE CLASS ***************************/
-class Tree extends Controller{
 
-    Node root = new Node(0,0,0);
+/********* TREE CLASS ***************************/
+class Tree extends Controller {
+
+    Node root = new Node(0, 0, 0);
 
     int move = 0;
 
     //adds a new set of children to a node
-    void constructTree(Node n){
-        for(int i = 0; i < numHousesINPUT; i++){
+    void constructTree(Node n) {
+        for (int i = 0; i < numHousesINPUT; i++) {
             ArrayList<House> pTemp = player;
             ArrayList<House> cTemp = computer;
-            ArrayList<Jar>jTemp = jars;
-            moveMarblesPlayer2(pTemp,cTemp,jTemp,i);
-            n.children.add(new Node(i,1,cTemp.get(i).numMarbles));
-            for(int j = 0; j < numHousesINPUT; j++){
+            ArrayList<Jar> jTemp = jars;
+            moveMarblesPlayer2(pTemp, cTemp, jTemp, i);
+            n.children.add(new Node(i, 1, cTemp.get(i).numMarbles));
+            for (int j = 0; j < numHousesINPUT; j++) {
                 ArrayList<House> pTemp2 = pTemp;
                 ArrayList<House> cTemp2 = cTemp;
                 ArrayList<Jar> jTemp2 = jTemp;
-                moveMarblesPlayer2(pTemp2,cTemp2,jTemp2,j);
-                n.children.get(i).children.add(new Node(j,0,cTemp2.get(j).numMarbles));
-                n.children.get(i).children.get(j).score = getScore(n.children.get(i).children.get(j),jTemp2.get(1).numMarbles);
+                moveMarblesPlayer2(pTemp2, cTemp2, jTemp2, j);
+                n.children.get(i).children.add(new Node(j, 0, cTemp2.get(j).numMarbles));
+                n.children.get(i).children.get(j).score = getScore(n.children.get(i).children.get(j), jTemp2.get(1).numMarbles);
             }
         }
     }
 
-    void clearTree(){
-        for(Node x: root.children){
-            for(Node y: x.children){
+    void clearTree() {
+        for (Node x : root.children) {
+            for (Node y : x.children) {
                 y = null;
             }
-            x=null;
+            x = null;
         }
         root = null;
     }
 
-    int getScore(Node n, int newVal){
+    int getScore(Node n, int newVal) {
         int score = 0;
-        if(freeTurn(n)){
+        if (freeTurn(n)) {
             score = score + 5;
         }
 
@@ -800,27 +799,27 @@ class Tree extends Controller{
         return score;
     }
 
-    int minimax(Node n, int depth, boolean max){
-        if(depth == 0 || n.children.size()==0){
+    int minimax(Node n, int depth, boolean max) {
+        if (depth == 0 || n.children.size() == 0) {
             return n.score;
         }
-        if(max){
+        if (max) {
             int bestValue = -1000000;
-            for(Node x: n.children){
-                if(freeTurn(x)){
+            for (Node x : n.children) {
+                if (freeTurn(x)) {
                     max = true;
-                }else{
+                } else {
                     max = false;
                 }
-                int val = minimax(x,depth-1,max);
-                if(val>bestValue){
+                int val = minimax(x, depth - 1, max);
+                if (val > bestValue) {
                     move = x.index;
                     bestValue = val;
                 }
                 n.score = bestValue;
                 return bestValue;
             }
-        }else {
+        } else {
             int bestValue = 1000000;
             for (Node x : n.children) {
                 if (freeTurn(x)) {
@@ -829,36 +828,45 @@ class Tree extends Controller{
                     max = true;
                 }
                 int val = minimax(x, depth - 1, max);
-                if(val < bestValue){
+                if (val < bestValue) {
                     move = x.index;
                     bestValue = val;
                 }
                 n.score = bestValue;
                 return bestValue;
-
             }
         }
         return -1;
     }
 
-    boolean freeTurn(Node n){
-        if((numHousesINPUT+1)-n.index == computer.get(n.index).numMarbles){
+    boolean freeTurn(Node n) {
+        if ((numHousesINPUT + 1) - n.index == computer.get(n.index).numMarbles) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
-    int AIMove(){
+    int AIMove() {
         System.out.println("Constructing Tree...");
         this.constructTree(this.root);
         System.out.println("Finding Optimal Move...");
-        int result = minimax(this.root,2,true);
-        System.out.println("Optimal move is House #" + result);
+        int val = (int) Math.random() * numHousesINPUT + 1;
+        int result = -1;
+        if (isValidMove(computer.get(val))) {
+            result = val;
+        }
+        while (!isTimeUp) {
+            result = minimax(this.root, 2, true);
+            System.out.println("Optimal move is House #" + result);
+        }
         System.out.println("Clearing Tree...");
         this.clearTree();
+        if (result == -1) {
+            System.out.println("ERROR: AI Cannot find move");
+            isEnd = true;
+        }
         return result;
 
     }
-
 }

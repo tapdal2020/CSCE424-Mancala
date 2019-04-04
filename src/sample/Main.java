@@ -25,7 +25,7 @@ public class Main /*extends Application*/ {
         primaryStage.setScene(scene);
 
         primaryStage.show();*/
-   // }
+    // }
 
 
     public static void main(String[] args){
@@ -36,7 +36,7 @@ public class Main /*extends Application*/ {
         b.setTimeLimit();
         b.gameType();
 
-    //BoardGUI board = new BoardGUI(b.numHousesINPUT, b.numSeedsINPUT);
+        //BoardGUI board = new BoardGUI(b.numHousesINPUT, b.numSeedsINPUT);
 
         System.out.println(b.getSideCount(true));
         b.getBoardStatus();
