@@ -44,6 +44,7 @@ public class BoardGUI extends Stage{
     GridPane grid = new GridPane();
     Scene scene = new Scene(root, 900, 900);
 
+    int turnCount;
 
     public BoardGUI(int numHouses, int numMarbles, boolean randDistMarbles, boolean gameType, long timerLength){
         //set scene properties
@@ -65,6 +66,7 @@ public class BoardGUI extends Stage{
         b.numSeedsINPUT = numMarbles;
         b.updateArrayLists(numHouses, numMarbles);
         b.updateButtonLabels();
+        b.turnCount = turnCount;
 
         //random distribution of marbles
         if(randDistMarbles) {
@@ -160,21 +162,21 @@ public class BoardGUI extends Stage{
             @Override
             public void handle(ActionEvent event) {
                 //if player 2 turn
-                playerTurnLabel.setText("Player 2's Turn");
-                if ( player2INPUT.getText() != null && !player2INPUT.getText().isEmpty()){
-                    int index = Integer.parseInt(player2INPUT.getText());
-                    Button currButton = computerButtonsList.get(index);
-
-
-                }
-
-                    //else if player 1 turn
-                    /*
-                    if ( player1Input.getText() != null && !player1INPUT.getText.isEmpty()){
-                        int index = Integer.parseInt(player1Input.getText());
-                        Button currButton = playerButtonList.get(index);
+                if(turnCount%2 ==0) {
+                    playerTurnLabel.setText("Player 2's Turn");
+                    if (player2INPUT.getText() != null && !player2INPUT.getText().isEmpty()) {
+                        int index = Integer.parseInt(player2INPUT.getText());
+                        Button currButton = computerButtonsList.get(index);
                     }
-                    * */
+                }
+                    //else if player 1 tur
+                    else {
+                    playerTurnLabel.setText("Player 1's Turn");
+                    if (player1INPUT.getText() != null && !player1INPUT.getText().isEmpty()) {
+                        int index = Integer.parseInt(player1INPUT.getText());
+                        Button currButton = playerButtonsList.get(index);
+                    }
+                }
             }
         });
     }
