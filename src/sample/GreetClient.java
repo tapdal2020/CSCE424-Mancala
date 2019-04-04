@@ -2,6 +2,8 @@ package sample;
 
 import java.net.*;
 import java.io.*;
+import java.util.Scanner;
+
 
 public class GreetClient {
     private Socket clientSocket;
@@ -14,8 +16,17 @@ public class GreetClient {
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     }
 
-    public String sendMessage(String msg) throws IOException {
-        out.println(msg);
+    public String sendReady() throws IOException{
+        String ready = "ready";
+        out.print(ready);
+        String resp = in.readLine();
+        return resp;
+    }
+
+
+    public String sendMessage(int move) throws IOException {
+
+        out.println(move);
         String resp = in.readLine();
         return resp;
     }
@@ -29,7 +40,10 @@ public class GreetClient {
     public static void main(String[] args) throws IOException {
         GreetClient client = new GreetClient();
         client.startConnection("127.0.0.1", 6666);
-        String response = client.sendMessage("hello server");
+        Scanner keyboard = new Scanner(System.in);
+        String msg = keyboard.nextLine();
+        int move = Integer.parseInt(msg);
+        String response = client.sendMessage(move);
         System.out.println(response);
     }
 }
