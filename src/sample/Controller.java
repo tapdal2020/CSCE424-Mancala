@@ -543,8 +543,7 @@ public class Controller {
                                             House oppositeHouse = computerList.get(numHousesINPUT - houseNumber);
                                             playerJar.numMarbles = playerJar.numMarbles + oppositeHouse.numMarbles+1;
                                             oppositeHouse.numMarbles = 0;
-                                            currHouse.
-                                                    numMarbles = 0;
+                                            currHouse.numMarbles = 0;
                                         }
                                     }
                                 }
