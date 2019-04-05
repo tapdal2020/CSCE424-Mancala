@@ -22,6 +22,7 @@ public class mainScene extends Stage{
     long timerLength = 0; //default
     boolean randomDistrBOOL = false; //default
     boolean gameTypeAIBOOL = false; //default two player game (false -> 2P, true -> AI)
+    boolean localGameBool = true; //default to local game (true ->local, false -> remote)
 
     /*GUI variables*/
         //Buttons
@@ -30,6 +31,8 @@ public class mainScene extends Stage{
     Button randomDistNO = new Button("No");
     Button AIYESBtn = new Button("AI");
     Button twoPlayerYESBtn = new Button("Two Players");
+    Button localButton = new Button("Local");
+    Button remoteButton = new Button("Remote");
 
         //Labels
     private Label randomDistTEXT = new Label("Random Distribution of Marbles? ");
@@ -39,6 +42,7 @@ public class mainScene extends Stage{
     private Label marbleInputLabel = new Label("Enter a number between 1 and 10");
     private Label gameTypeLabel = new Label("Select Game Type");
     private Label timerLabel = new Label("Enter the desired time length");
+    private Label remoteLocalLabel = new Label("Local or Remote Game?");
 
         //Text Input Boxes
     final TextField houseInputTEXT = new TextField();
@@ -77,7 +81,7 @@ public class mainScene extends Stage{
         GridPane.setColumnSpan(gameTypeLabel,8);
 
         welcomeLabel.setFont(Font.font("Arial",30)); //TODO: Change font, font size
-        instructionsLabel.setText("HOW TO PLAY TEXT KJALSKDJ J DFJSLDJFLKD "); //TODO: Add instructions text
+        instructionsLabel.setText("Select Game Style Below "); //TODO: Add instructions text
 
         GridPane.setConstraints(houseInputLabel, 1,5);
         houseInputLabel.setAlignment(Pos.CENTER);
@@ -90,6 +94,10 @@ public class mainScene extends Stage{
         GridPane.setConstraints(timerLabel,1,9);
         timerLabel.setAlignment(Pos.CENTER);
         GridPane.setColumnSpan(timerLabel,8);
+
+        GridPane.setConstraints(remoteLocalLabel, 1,11);
+        remoteLocalLabel.setAlignment(Pos.CENTER);
+        GridPane.setColumnSpan(remoteLocalLabel,8);
 
         /*Input fields*/
         GridPane.setColumnSpan(houseInputTEXT, 2);
@@ -118,6 +126,11 @@ public class mainScene extends Stage{
         GridPane.setConstraints(twoPlayerYESBtn,2,8);
         AIYESBtn.setAlignment(Pos.CENTER);
         twoPlayerYESBtn.setAlignment(Pos.CENTER);
+
+        GridPane.setConstraints(localButton,1,12);
+        localButton.setAlignment(Pos.CENTER);
+        GridPane.setConstraints(remoteButton,2,12);
+        remoteButton.setAlignment(Pos.CENTER);
 
 
 
@@ -148,6 +161,10 @@ public class mainScene extends Stage{
 
         grid.getChildren().add(timerLabel);
         grid.getChildren().add(timerInputTEXT);
+
+        grid.getChildren().add(remoteButton);
+        grid.getChildren().add(localButton);
+        grid.getChildren().add(remoteLocalLabel);
 
         this.show();
 
@@ -217,6 +234,20 @@ public class mainScene extends Stage{
             @Override
             public void handle(ActionEvent event) {
                 gameTypeAIBOOL = false;
+            }
+        });
+
+        localButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                localGameBool = true;
+            }
+        });
+
+        remoteButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                localGameBool = false;
             }
         });
     }
