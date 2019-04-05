@@ -169,7 +169,7 @@ public class BoardGUI extends Stage{
                         Button currButton = computerButtonsList.get(index);
                     }
                 }
-                    //else if player 1 tur
+                    //else if player 1 turn
                     else {
                     playerTurnLabel.setText("Player 1's Turn");
                     if (player1INPUT.getText() != null && !player1INPUT.getText().isEmpty()) {
