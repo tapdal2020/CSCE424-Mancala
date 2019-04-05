@@ -25,6 +25,7 @@ public class BoardGUI extends Stage{
     Button computerJarButton;
     Button enterButton = new Button("Enter");
 
+
     Button backButton = new Button("Back to Main Menu");
 
     Label playerTurnLabel= new Label("Player 1's Turn");
