@@ -1,5 +1,4 @@
-
-package sample;
+/*package sample;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -20,12 +19,11 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         new  mainScene();
-        /* Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.setTitle("MANCALA");
         Scene scene = new Scene(root, 900, 500);
         primaryStage.setScene(scene);
-
-        primaryStage.show();*/
+        primaryStage.show();
     }
 
 
@@ -50,4 +48,62 @@ public class Main extends Application {
         System.out.println("Finished");
     }
 }
+*/
+package sample;
 
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.Group;
+import javafx.stage.Stage;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.text.*;
+import javafx.geometry.*;
+
+
+public class Main extends Application {
+
+    @Override
+    public void start(Stage primaryStage) throws Exception{
+        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        primaryStage.setTitle("MANCALA");
+        Scene scene = new Scene(root, 900, 500);
+        primaryStage.setScene(scene);
+
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(30,80,50,80));
+        grid.setVgap(9);
+        grid.setHgap(9);
+
+        scene.setRoot(grid);
+
+        final TextField houseInputTEXT = new TextField();
+        houseInputTEXT.setPrefWidth(75);
+        houseInputTEXT.setPromptText("Add Points");
+        GridPane.setConstraints(houseInputTEXT,0,5);
+        houseInputTEXT.setAlignment(Pos.CENTER);
+        grid.getChildren().add(houseInputTEXT);
+
+        primaryStage.show();
+    }
+
+
+    public static void main(String[] args){
+        //initialize objects
+        Controller b = new Controller();
+        b.getUserInputs();
+        b.assignRandomMarbles();
+        b.setTimeLimit();
+        b.gameType();
+
+
+        //System.out.println(b.getSideCount(true));
+        // b.getBoardStatus();
+        // b.moveMarbles();
+
+        //Launch GUI Window
+        launch(args);
+    }
+}

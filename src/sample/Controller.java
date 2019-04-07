@@ -31,7 +31,9 @@ public class Controller {
     boolean isEnd = false; //game begins in the playing state
     boolean isTurn = true; //it is always the user's turn at the beginning of the game
     boolean isAI = false;
+    boolean doubleAI = false;
     boolean isTimeUp = true;
+    boolean finishedPieMove = false;
     long timeAllowed;
     int turnCount = 1;
     int numHousesINPUT = 6; //default number of houses is 6;
@@ -169,29 +171,6 @@ public class Controller {
         }
     }
 
-    public void pieMove(){
-        ArrayList<House> tempHouseArray = player;
-        player = computer;
-        computer = tempHouseArray;
-
-        System.out.println("\nStarting Pie Move...");
-        int length = player.size();
-        for (int i = 0; i<length; i++ ){
-
-            player.get(i).player = true;
-            computer.get(i).player = false;
-            //Change boolean value of player associated with the house
-        }
-        Jar tempJar = jars.get(0);
-        jars.set(0, jars.get(1));
-        jars.set(1, tempJar);
-        jars.get(0).player = true;
-        jars.get(1).player = false;
-        isTurn = true;
-        getBoardStatus();
-        //player 1 goes again, but with houses/jars switched
-    }
-
 
     public void setTimeLimit(){
         System.out.println("\nHow long would you like the timer to be? (sec): ");
@@ -207,12 +186,14 @@ public class Controller {
     public class TimedScanner implements Runnable
     {
         private Scanner scanner;
+        private boolean AImoveMade;//true for move decided, false for still deciding
         private StringBuilder buffer;
         private boolean reading;
         private Thread t;
 
         public TimedScanner()
         {
+            AImoveMade = false;
             scanner = new Scanner(System.in);
             buffer = new StringBuilder();
             reading = false;
@@ -247,7 +228,35 @@ public class Controller {
             reading = false;
             return result;
         }
-
+        public String nextAILine(long time)
+        {
+            reading = true;
+            AImoveMade = false;
+            String result = null;
+            long startTime = System.currentTimeMillis();
+            while (System.currentTimeMillis() - startTime < time && result == null && AImoveMade == false)
+            {
+                try
+                {
+                    Thread.sleep(30);
+                }
+                catch (InterruptedException e)
+                {
+                }
+                synchronized (buffer)
+                {
+                    if (buffer.length() > 0)
+                    {
+                        Scanner temp = new Scanner(buffer.toString());
+                        //result = temp.nextLine();
+                    }
+                    Tree t = new Tree();
+                    result = Integer.toString(t.AIMove());
+                }
+            }
+            reading = false;
+            return result;
+        }
         @Override
         public void run()
         {
@@ -326,7 +335,7 @@ public class Controller {
                             if (numMarblesToMove == 0) { //last marble
                                 //landed in empty house and opposite house containts marbls
                                 //capture the opposite house
-                                if (currHouse.numMarbles == 1 && computerList.get(numHousesINPUT-houseNumber).numMarbles > 0) {
+                                if (currHouse.numMarbles == 1 && computerList.get(numHousesINPUT-houseNumber).numMarbles >= 0) {
                                     Jar playerJar = jars.get(0);
                                     House oppositeHouse = computerList.get(i);
                                     playerJar.numMarbles = playerJar.numMarbles + oppositeHouse.numMarbles + 1;
@@ -475,40 +484,91 @@ public class Controller {
 
     }//end move marbles player 2
 
-    public void moveMarbles(ArrayList<House> playerList, ArrayList<House> computerList, ArrayList<Jar> jarList,int AIInput) {
+
+    public void moveMarbles(ArrayList<House> playerList, ArrayList<House> computerList, ArrayList<Jar> jarList,int Player) {
 
         updateIsEnd();
         if (!isEnd) {
-
-            /*if(turnCount == 2){
+            if(turnCount == 2){
                 getBoardStatus();
                 Scanner keyboard = new Scanner(System.in);
                 System.out.println("\nWould Player 2 like to use Pie Move? Y/N: ");
                 String pieInput = keyboard.nextLine();
-                if(pieInput != "N" || pieInput != "n"){
-                    System.out.println("\n Pie move accepted");
-                    pieMove();
-                    moveMarblesPlayer1(player,computer);
-                }
-            }*/
+                if(finishedPieMove = false ) {
+                    if (pieInput == "Y" || pieInput == "y") {
+                        System.out.println("\n Pie move accepted");
+                        ArrayList<House> tempHouseArray = playerList;
+                        playerList = computerList;
+                        computerList = tempHouseArray;
+
+                        System.out.println("\nStarting Pie Move...");
+                        int length = playerList.size();
+                        for (int i = 0; i < length; i++) {
+
+                            playerList.get(i).player = true;
+                            computerList.get(i).player = false;
+                            //Change boolean value of player associated with the house
+                        }
+                        Jar tempJar = jarList.get(0);
+                        jarList.set(0, jarList.get(1));
+                        jarList.set(1, tempJar);
+                        jarList.get(0).player = true;
+                        jarList.get(1).player = false;
+                        isTurn = true;
+                        getBoardStatus();
+                        //player 1 goes again, but with houses/jars switched
+                        moveMarbles(playerList, computerList, jarList, -1);
+                        finishedPieMove = true;
+                    }else{
+                        System.out.println("Turned down pie move");
+                    }
+                    }
+            }
+
             getBoardStatus();
             int userInput;
-            if (!isAI) {
                 System.out.println("\n Turn number: " + turnCount);
-                Scanner keyboard = new Scanner(System.in);
-                do {
-                    if (AIInput == -1) {
+                    if (Player == -1) {
                         System.out.println("\nPLAYER 1: ");
-                    } else if (AIInput == -2) {
+                    } else if (Player == -2) {
                         System.out.println("\nPLAYER 2: ");
                     } else {
                         System.out.println("\n don't know which player is going...");
                     }
-                    System.out.print("Enter a valid integer of the house you wish to select: ");
-                    userInput = keyboard.nextInt();
-                } while (userInput < 1 || userInput > numHousesINPUT);
-            } else {
-                userInput = AIInput;
+                    System.out.print("\nEnter a valid integer of the house you wish to select: ");
+                    //Timed move
+                    //Scanner keyboard = new Scanner(System.in);
+                    /*TimedScanner scanner = new TimedScanner();
+                    String tempUserInput = scanner.nextLine(timeAllowed);
+                    if (tempUserInput == null) {
+                        System.out.println("\nTime's up, random move will be made for you: ");
+                        isTimeUp = true;
+                        userInput = 1 + (int) (Math.random() * numHousesINPUT);
+                        System.out.println(userInput);
+                        if (isValidMove(playerList.get(userInput)) == false) {
+                            if(Player == -1) {
+                                System.out.println("\nAutomatic move was invalid, Player 1 loses");
+                            }
+                            else{
+                                System.out.println("\nAutomatic move was invalid, Player 2 loses");
+                            }
+                            isEnd = true;
+                        }else{
+                            isTimeUp = false;
+                        }
+
+                    } else {
+                        System.out.println("\nMove made within time limit...");
+                        isTimeUp = false;
+                        userInput = Integer.parseInt(tempUserInput);
+                    }*/
+            if ((isAI==true && Player == -2)||doubleAI == true) {
+                Tree t = new Tree();
+                userInput = t.AIMove();
+            }
+            else {
+                Scanner keyboard = new Scanner(System.in);
+                userInput = keyboard.nextInt();
             }
             //House selectedHouse = computerList.get(userInput - 1);
             if (isValidMove(playerList.get(userInput - 1)) == true) {
@@ -535,17 +595,18 @@ public class Controller {
                         if (numMarblesToMove == 0) {
                             //landed in empty house and opposite house contains marbles
                             //capture the opposite house
-                            if (currHouse.numMarbles == 1 && oppositeHouse.numMarbles > 0) {
+                            if (currHouse.numMarbles == 1 && oppositeHouse.numMarbles >= 0) {
                                 Jar playerJar;
-                                if (AIInput == -2) {
+                                if (Player == -2) {
                                     playerJar = jars.get(1);
                                 } else {
                                     playerJar = jars.get(0);
                                 }
                                 playerJar.numMarbles = playerJar.numMarbles + oppositeHouse.numMarbles + 1;
                                 oppositeHouse.numMarbles = 0;
-                                System.out.println("\nCaptured Marbles in House" + (numHousesINPUT - houseNumber) +
-                                        ". Marbles remaining in house: "+ computerList.get(numHousesINPUT-houseNumber).numMarbles);                                getBoardStatus();
+                                System.out.print(("\nLanded in house"+ houseNumber));
+                                System.out.println("\nCaptured Marbles in House " + (numHousesINPUT-houseNumber) +
+                                        ". Marbles remaining in house: "+ computerList.get(numHousesINPUT-houseNumber-1).numMarbles);                    getBoardStatus();
                                 currHouse.numMarbles = 0;
                                 //computerList.get(numHousesINPUT - houseNumber).numMarbles = oppositeHouse.numMarbles;
 
@@ -568,9 +629,9 @@ public class Controller {
                                     if (numMarblesToMove == 0) {
                                         //landed in empty house and opposite house contains marbles
                                         //capture the opposite house
-                                        if (currHouse.numMarbles == 1 && oppositeHouse.numMarbles > 0) {
+                                        if (playerList.get(houseNumber).numMarbles == 1 && oppositeHouse.numMarbles > 0) {
                                             Jar playerJar;
-                                            if (AIInput == -2) {
+                                            if (Player == -2) {
                                                 playerJar = jars.get(1);
                                             } else {
                                                 playerJar = jars.get(0);
@@ -580,9 +641,9 @@ public class Controller {
 
                                             oppositeHouse.numMarbles = 0;
                                             currHouse.numMarbles = 0;
-
+                                            System.out.print(("\nLanded in house"+ houseNumber));
                                             System.out.println("\nCaptured Marbles in House " + (numHousesINPUT-houseNumber) +
-                                                    ". Marbles remaining in house: "+ computerList.get(numHousesINPUT-houseNumber).numMarbles);
+                                                    ". Marbles remaining in house: "+ computerList.get(numHousesINPUT-houseNumber-1).numMarbles);
 
                                         }
                                     }
@@ -593,7 +654,7 @@ public class Controller {
                                 if ((playerList.get(userInput - 1).numMarbles != 1) ||
                                         (playerList.get(userInput - 1) == playerList.get(numHousesINPUT - 1))) {
                                     Jar playerJar;
-                                    if (AIInput == -1) {
+                                    if (Player == -1) {
                                         playerJar = jarList.get(0);
                                     } else {
                                         playerJar = jarList.get(1);
@@ -606,7 +667,7 @@ public class Controller {
                             }
                             if (numMarblesToMove == 0) { //user landed in own jar, gets free play
                                 if (!isEnd) {
-                                    if (AIInput == -1) {
+                                    if (Player == -1) {
                                         System.out.println("\nStaying on Player 1...");
                                         moveMarbles(playerList, computerList, jarList, -1);
                                     } else {//it's the player with the bottom houses
@@ -636,7 +697,7 @@ public class Controller {
                     turnCount++;
                     System.out.println("\n isTurn: " + isTurn);
                     //switch players
-                    if(AIInput == -2) {
+                    if(Player == -2) {
                         isTurn = true; // this will set the state message to say "The computer is playing". At the end of our AI turn function, we will return the value back to true.
 
                         System.out.println("\nGoing to Player 1...");
@@ -646,18 +707,21 @@ public class Controller {
                         System.out.print(("\nGoing to Player 2..."));
                         moveMarbles(computerList,playerList,jarList, -2);//player 2
                     }
-                } else {
-                    System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-"+numHousesINPUT+"\n\n");
-                    if(AIInput == -1) {
+                }
+            else {
+                if(isTimeUp == false) {
+                    System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-" + numHousesINPUT + "\n\n");
+                    if (Player == -1) {
                         isTurn = true; //stay on player 1 turn
                         moveMarbles(playerList, computerList, jarList, -1);//-1 means human player 1
-                    }else if(AIInput == -2){
+                    } else if (Player == -2) {
                         isTurn = false; //stay on player 2 turn
                         moveMarbles(playerList, computerList, jarList, -2);//-1 means human player 1
-                    }
-                    else{
+                    } else {
                         System.out.println("\nGoing to AI....");
                     }
+                }
+                System.out.println("\n");
 
                 }
             }
@@ -677,15 +741,15 @@ public class Controller {
             if (player.get(i) == h) {
                 findHouseSide = "player";
 
-                System.out.println("\nplayer's turn, picked house "+(i+1)+", isTurn is "+isTurn);
+                //System.out.println("\nplayer's turn, picked house "+(i+1)+", isTurn is "+isTurn);
 
             }
             if (computer.get(i) == h) {
                 findHouseSide = "computer";
-                System.out.println("\ncomputer's turn, picked house "+(i+1)+", isTurn is "+isTurn);
+                //System.out.println("\ncomputer's turn, picked house "+(i+1)+", isTurn is "+isTurn);
             }
         }
-        System.out.println("\nisTurn = " + isTurn +" \nfindHouseSide" +findHouseSide);
+        //System.out.println("\nisTurn = " + isTurn +" \nfindHouseSide" +findHouseSide);
         if ((isTurn && findHouseSide.equals("player")) || (!isTurn && findHouseSide.equals("computer"))) {
             if (findHouseSide.equals("player")) {
                 if (getHouseCount(h) > 0) {
@@ -698,7 +762,7 @@ public class Controller {
                 }
             }
         }
-        System.out.println("\nMarble count: " + getHouseCount(h)+ " check is "+ check);
+        //System.out.println("\nMarble count: " + getHouseCount(h)+ " check is "+ check);
 
         return check;
     }//end is valid move
@@ -770,26 +834,41 @@ public class Controller {
     }
 
     public void aiGame(){
-        System.out.print("AI GAME IMPLEMENTATION: IN PROGRESS");
-
         Tree t = new Tree();
         t.AIMove();
-
     }
 
     public void gameType(){
+
         String gameTypeINPUT = "";
-        System.out.print("Game Type (AI/2P): ");
+        System.out.print("Game Type (AI/2P/2AI): ");
+        do{
         Scanner keyboard = new Scanner(System.in);
         gameTypeINPUT = keyboard.nextLine();
+
         if ( gameTypeINPUT.equals("AI")){
             isAI = true;
-            aiGame();
+            doubleAI = false;
+            finishedPieMove = false;
+            twoPlayerGame();
         }
         else if ( gameTypeINPUT.equals("2P")){
             isAI = false;
+            doubleAI = false;
+            finishedPieMove = false;
             twoPlayerGame();
         }
+        else if( gameTypeINPUT.equals("2AI")) {
+            isAI = false;
+            doubleAI = true;
+            finishedPieMove = false;
+            twoPlayerGame();
+        }
+        else{
+        System.out.println("Do not recognize game type");
+        }
+        }while(gameTypeINPUT != "2P" && gameTypeINPUT != "AI" && gameTypeINPUT != "2AI");
+
     }
 
     /*******************Jar/House Functions ****************************/
@@ -966,6 +1045,7 @@ class Tree extends Controller {
             return false;
         }
     }
+
 
     int AIMove() {
         System.out.println("Constructing Tree...");
