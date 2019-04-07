@@ -43,3 +43,15 @@ working together to finish sprint
 
 4/1 - 50 minutes
 315 Lab
+divided up work, then worked together
+
+4/3 - 50 minutes
+315 Lab
+updated each other on what had been done (not much because of other class's exams/projects)
+worked on code
+
+4/5 - 50 minutes
+315 class time
+figured out how much was left
+client-server would take more time than we had, prioritized making other functions work
+worked on code
