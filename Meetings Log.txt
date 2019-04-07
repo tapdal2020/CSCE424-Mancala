@@ -40,3 +40,6 @@ fixing AI, getting timer to work
 3/29 - 160 minutes
 Zachry
 working together to finish sprint
+
+4/1 - 50 minutes
+315 Lab
