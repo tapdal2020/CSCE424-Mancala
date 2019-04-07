@@ -373,7 +373,7 @@ public class Controller {
                     //getBoardStatus();
                     turnCount++;
                     isTurn = false; // this will set the state message to say "The computer is playing". At the end of our AI turn function, we will return the value back to true.
-                    moveMarblesPlayer2(playerList, computerList, jars, 0);
+                    moveMarblesAI2(playerList, computerList, jars, 0);
                 } else {
                     System.out.println("\nError: Invalid entry\nPlease select a non-empty house by entering values 1-6\n\n");
                     isTurn = true; //stay on player 1 turn
@@ -392,13 +392,13 @@ public class Controller {
 
 
     //going to implement timer in player 2 later, when it is more polished TODO
-    public void moveMarblesPlayer2(ArrayList<House> playerList, ArrayList<House> computerList, ArrayList<Jar> jarList,int AIInput){
+    public void moveMarblesAI2(ArrayList<House> playerList, ArrayList<House> computerList, ArrayList<Jar> jarList,int AIInput){
         updateIsEnd();
         if ( !isEnd) {
 
             getBoardStatus();
             int userInput;
-            if(!isAI) {
+            /*if(!isAI) {
                 System.out.println("PLAYER 2:");
                 Scanner keyboard = new Scanner(System.in);
                 System.out.print("Enter an integer of the house you wish to select: ");
@@ -406,7 +406,8 @@ public class Controller {
             }
             else{
                 userInput = AIInput;
-            }
+            }*/
+            userInput = AIInput;
             House selectedHouse = computerList.get(userInput - 1);
             if (isValidMove(selectedHouse) == true) {
 
@@ -1046,13 +1047,13 @@ class Tree extends Controller {
             ArrayList<House> pTemp = player;
             ArrayList<House> cTemp = computer;
             ArrayList<Jar> jTemp = jars;
-            moveMarbles(pTemp, cTemp, jTemp, i);
+            moveMarblesAI2(pTemp, cTemp, jTemp, i);
             n.children.add(new Node(i, 1, cTemp.get(i).numMarbles));
             for (int j = 0; j < numHousesINPUT; j++) {
                 ArrayList<House> pTemp2 = pTemp;
                 ArrayList<House> cTemp2 = cTemp;
                 ArrayList<Jar> jTemp2 = jTemp;
-                moveMarbles(pTemp2, cTemp2, jTemp2, j);
+                moveMarblesAI2(pTemp2, cTemp2, jTemp2, j);
                 n.children.get(i).children.add(new Node(j, 0, cTemp2.get(j).numMarbles));
                 n.children.get(i).children.get(j).score = getScore(n.children.get(i).children.get(j), jTemp2.get(1).numMarbles);
             }
