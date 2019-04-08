@@ -164,9 +164,11 @@ public class BoardGUI extends Stage{
             public void handle(ActionEvent event) {
                 //if player 2 turn
                 if(turnCount%2 ==0) {
+
                     playerTurnLabel.setText("Player 2's Turn");
                     if (player2INPUT.getText() != null && !player2INPUT.getText().isEmpty()) {
                         int index = Integer.parseInt(player2INPUT.getText());
+                        //b.moveMarbles(b.player,b.computer,b.jars,false,index);
                         Button currButton = computerButtonsList.get(index);
                     }
                 }
@@ -175,6 +177,7 @@ public class BoardGUI extends Stage{
                     playerTurnLabel.setText("Player 1's Turn");
                     if (player1INPUT.getText() != null && !player1INPUT.getText().isEmpty()) {
                         int index = Integer.parseInt(player1INPUT.getText());
+                        //b.moveMarbles(b.player,b.computer,b.jars,true, index);
                         Button currButton = playerButtonsList.get(index);
                     }
                 }

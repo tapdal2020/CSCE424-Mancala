@@ -12,6 +12,7 @@ import javafx.scene.text.*;
 import javafx.geometry.*;
 
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main extends Application {
@@ -30,6 +31,11 @@ public class Main extends Application {
     public static void main(String[] args){
         //initialize objects
         Controller b = new Controller();
+
+        GreetServer server=new GreetServer();
+        GreetClient client = new GreetClient();
+
+
         //b.getUserInputs();
         //b.assignRandomMarbles();
         //b.setTimeLimit();
@@ -40,10 +46,6 @@ public class Main extends Application {
         //System.out.println(b.getSideCount(true));
         //b.getBoardStatus();
         //b.moveMarbles();
-
-        System.out.println("Starting up ....");
-        //Launch GUI Window
-        launch(args);
 
         System.out.println("Finished");
     }
