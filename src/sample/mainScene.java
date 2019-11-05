@@ -19,20 +19,9 @@ public class mainScene extends Stage{
     //helper variables
     int numHouse = 6; //default
     int numMarbles = 4; //default
-    long timerLength = 0; //default
-    boolean randomDistrBOOL = false; //default
-    boolean gameTypeAIBOOL = false; //default two player game (false -> 2P, true -> AI)
-    boolean localGameBool = true; //default to local game (true ->local, false -> remote)
-
     /*GUI variables*/
         //Buttons
     Button playButton =  new Button("PLAY");
-    Button randomDistYES = new Button ("Yes");
-    Button randomDistNO = new Button("No");
-    Button AIYESBtn = new Button("AI");
-    Button twoPlayerYESBtn = new Button("Two Players");
-    Button localButton = new Button("Local");
-    Button remoteButton = new Button("Remote");
 
         //Labels
     private Label randomDistTEXT = new Label("Random Distribution of Marbles? ");
@@ -99,72 +88,11 @@ public class mainScene extends Stage{
         remoteLocalLabel.setAlignment(Pos.CENTER);
         GridPane.setColumnSpan(remoteLocalLabel,8);
 
-        /*Input fields*/
-        GridPane.setColumnSpan(houseInputTEXT, 2);
-        houseInputTEXT.setPromptText("Number of Houses");
-        GridPane.setConstraints(houseInputTEXT,1,6);
-
-        GridPane.setColumnSpan(marbleInputTEXT, 2);
-        marbleInputTEXT.setPromptText("Number of Marbles");
-        GridPane.setConstraints(marbleInputTEXT,3,6);
-
-        GridPane.setConstraints(timerInputTEXT,1,10);
-        timerInputTEXT.setPromptText("Timer Length");
-        GridPane.setColumnSpan(timerInputTEXT,2);
-
-        /*Buttons*/
-        GridPane.setConstraints(playButton,1,15);
-        playButton.setAlignment(Pos.CENTER);
-
-        GridPane.setConstraints(randomDistTEXT,1,3);
-        GridPane.setConstraints(randomDistYES,1,4);
-        randomDistYES.setAlignment(Pos.CENTER);
-        GridPane.setConstraints(randomDistNO,2,4);
-        randomDistNO.setAlignment(Pos.CENTER);
-
-        GridPane.setConstraints(AIYESBtn,1,8);
-        GridPane.setConstraints(twoPlayerYESBtn,2,8);
-        AIYESBtn.setAlignment(Pos.CENTER);
-        twoPlayerYESBtn.setAlignment(Pos.CENTER);
-
-        GridPane.setConstraints(localButton,1,12);
-        localButton.setAlignment(Pos.CENTER);
-        GridPane.setConstraints(remoteButton,2,12);
-        remoteButton.setAlignment(Pos.CENTER);
-
-
-
-
-
-
-
-
-
-
 
         /*ADD ATTRIBUTES TO SCENE*/
         grid.getChildren().add(playButton);
         grid.getChildren().add(welcomeLabel);
         grid.getChildren().add(instructionsLabel);
-        grid.getChildren().add(houseInputTEXT);
-        grid.getChildren().add(marbleInputTEXT);
-        grid.getChildren().add(randomDistTEXT);
-        grid.getChildren().add(randomDistYES);
-        grid.getChildren().add(randomDistNO);
-
-        grid.getChildren().add(houseInputLabel);
-        grid.getChildren().add(marbleInputLabel);
-
-        grid.getChildren().add(AIYESBtn);
-        grid.getChildren().add(twoPlayerYESBtn);
-        grid.getChildren().add(gameTypeLabel);
-
-        grid.getChildren().add(timerLabel);
-        grid.getChildren().add(timerInputTEXT);
-
-        grid.getChildren().add(remoteButton);
-        grid.getChildren().add(localButton);
-        grid.getChildren().add(remoteLocalLabel);
 
         this.show();
 
@@ -197,58 +125,10 @@ public class mainScene extends Stage{
                     }
                 }
 
-                if ( timerInputTEXT.getText() != null && !timerInputTEXT.getText().isEmpty()){
-                    timerLength = Integer.parseInt(timerInputTEXT.getText());
-                }
-
-                if( !errorLabelShow){
-                    new BoardGUI(numHouse, numMarbles,randomDistrBOOL,gameTypeAIBOOL, timerLength);
-                }
-
                 //this.show();
             }//end action
         });
 
-        randomDistNO.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                randomDistrBOOL = false;
-            }
-        });
 
-        randomDistYES.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                randomDistrBOOL = true;
-            }
-        });
-
-        AIYESBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                gameTypeAIBOOL = true;
-            }
-        });
-
-        twoPlayerYESBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                gameTypeAIBOOL = false;
-            }
-        });
-
-        localButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                localGameBool = true;
-            }
-        });
-
-        remoteButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                localGameBool = false;
-            }
-        });
     }
 } //end class

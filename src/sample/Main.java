@@ -84,22 +84,13 @@ public class Main extends Application {
         final TextField houseInputTEXT = new TextField();
         houseInputTEXT.setPrefWidth(75);
         houseInputTEXT.setPromptText("Add Points");
-        GridPane.setConstraints(houseInputTEXT,0,5);
         houseInputTEXT.setAlignment(Pos.CENTER);
-        grid.getChildren().add(houseInputTEXT);
 
         primaryStage.show();
     }
 
 
     public static void main(String[] args){
-        //initialize objects
-        Controller b = new Controller();
-        b.getUserInputs();
-        b.assignRandomMarbles();
-        b.setTimeLimit();
-        b.gameType();
-
 
         //System.out.println(b.getSideCount(true));
         // b.getBoardStatus();
